@@ -222,7 +222,7 @@ Workflow for if a site has the data in a single table on each page (many RVs/pag
 
     // Add the next data object to the file
     const outputFile =
-      extractedData.Make.toLowerCase().replace(/\s+/g, "_") + ".json";
+      extractedData.Make.toLowerCase().replace(/\s+/g, "-") + ".json";
     let index = urls.indexOf(url);
     if (index === 0) {
       fs.appendFileSync(outputFile, "[");
