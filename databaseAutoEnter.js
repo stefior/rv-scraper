@@ -6,8 +6,8 @@ const inputFile = "output.json";
 const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
 
 (async () => {
-  // doesn't use a headless browser currently, so I can
-  // verify visually that each was published without issue
+  // It doesn't use a headless browser currently, so
+  // I can verify visually that each was posted without issue
   const browser = await puppeteer.launch({ headless: false });
   let page = await browser.newPage();
 

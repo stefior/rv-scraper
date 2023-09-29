@@ -1,3 +1,7 @@
+import path from "path";
+import fs from "fs";
+import { exec } from "child_process";
+
 export default async function downloadAndConvertImage(url, filename) {
   const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
