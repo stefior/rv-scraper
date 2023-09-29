@@ -2,6 +2,7 @@ import puppeteer from "puppeteer";
 import fs from "fs";
 import downloadAndConvertImage from "./downloadAndConvertImage.js";
 import splitAwningMeasurements from "./splitAwningMeasurements.js";
+import { error } from "console";
 
 /*
 Workflow for if a site has the data in a single table on each page (many RVs/page):
@@ -211,8 +212,11 @@ Workflow for if a site has the data in a single table on each page (many RVs/pag
 
     await downloadAndConvertImage(
       extractedData.imageURL,
-      extractedData["Floor plan"]
-    );
+      extractedData["Floor plan"],
+      "./images"
+    ).catch((err) => {
+      throw err;
+    });
 
     if ("Awning length ftm" in extractedData) {
       extractedData["Awning length ftm"] = splitAwningMeasurements(

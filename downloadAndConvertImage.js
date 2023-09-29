@@ -1,31 +1,71 @@
 import path from "path";
 import fs from "fs";
+import util from "node:util";
 import { exec } from "child_process";
+const execAsync = util.promisify(exec);
 
-export default async function downloadAndConvertImage(url, filename) {
+async function handleError(promise, errorMessage) {
+  try {
+    await promise;
+  } catch (err) {
+    throw new Error(`${errorMessage}: ${err}`);
+  }
+}
+
+/**
+ * Downloads an image from a given URL, saves it to the specified directory,
+ * and converts it to PNG format if it's not already a PNG.
+ *
+ * @param {string} url - The URL of the image to download.
+ * @param {string} filename - The name to use when saving the image file (without extension).
+ * @param {string} directory [directory='./images'] - The directory to save the image to.
+ *
+ * @throws Will throw an error if there's a problem fetching the image or writing to disk.
+ *
+ * @returns {Promise<void>} A promise that resolves when the image has been downloaded,
+ * saved, and possibly converted to PNG.
+ *
+ * @example
+ *
+ * downloadAndConvertImage('https://example.com/image.jpg', 'exampleImage', './images')
+ *   .then(() => console.log('Image downloaded and converted successfully'))
+ *   .catch(error => console.error('Error:', error));
+ */
+export default async function downloadAndConvertImage(
+  url,
+  filename,
+  directory = "./images"
+) {
   const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch image: ${response.statusText}`);
+  }
   const arrayBuffer = await response.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const ext = path.extname(url).toLowerCase();
 
-  // Ensure 'images' directory exists
-  if (!fs.existsSync("images")) {
-    fs.mkdirSync("images");
-  }
+  await handleError(
+    fs.promises.mkdir(directory, { recursive: true }),
+    "Error while making specified directory"
+  );
 
-  const savePath = path.join("images", `${filename}${ext}`);
-  fs.writeFileSync(savePath, buffer);
+  const savePath = path.join(directory, `${filename}${ext}`);
+  await handleError(
+    fs.promises.writeFile(savePath, buffer),
+    "Failed to write original image"
+  );
 
-  // Convert to PNG if not PNG
   if (ext !== ".png") {
-    const pngPath = path.join("images", `${filename}`);
-    exec(`magick ${savePath} ${pngPath}`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error converting image to PNG: ${error}`);
-        return;
-      }
-      // Delete the original non-PNG image
-      fs.unlinkSync(savePath);
-    });
+    const pngPath = path.join(directory, `${filename}.png`);
+
+    await handleError(
+      execAsync(`magick "${savePath}" "${pngPath}"`),
+      "Error converting image to PNG"
+    );
+
+    await handleError(
+      fs.promises.unlink(savePath),
+      "Error deleting original image"
+    );
   }
 }

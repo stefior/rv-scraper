@@ -1,13 +1,39 @@
-/*
-regex from: https://stackoverflow.com/questions/66210684/extracting-tire-sizes-using-regex-c-sharp
-(PT|LT|ST|T|) - An optional letter (or letters) indicating the intended use or vehicle class for the tire
-\d{3} - 3-digit number: The "nominal section width" of the tire in millimeters
-/ - Slash character for character separation.
-\d{2,3} - 2- or 3-digit number: The "aspect ratio" of the sidewall height as a percentage of the nominal section width of the tire
-\s? - optional space
-(B|D|R|) - An optional letter indicating the construction of the fabric carcass of the tire
-\d{1,2} - 1- or 2-digit number: Diameter in inches of the wheel that the tires are designed to fit
-*/
+/**
+ * @typedef {Object} TireData
+ * @property {string} tireCode - The original tire code string.
+ * @property {string} vehicleClass - The vehicle class or intended use of the tire.
+ * @property {number} sectionWidthMM - The nominal section width of the tire in millimeters.
+ * @property {number} sectionWidthIn - The nominal section width of the tire in inches.
+ * @property {number} aspectRatio - The aspect ratio of the sidewall height as a decimal.
+ * @property {string} construction - The construction type of the fabric carcass of the tire.
+ * @property {number} wheelDiameterIn - The diameter of the wheel the tire is designed to fit, in inches.
+ * @property {number} tireDiameterIn - The overall diameter of the tire, in inches.
+ */
+
+/**
+ * Parses a given tire code string to extract and calculate tire dimensions and properties.
+ *
+ * @param {string} tireCode - The tire code string to be parsed.
+ * @returns {TireData} An object containing the parsed and calculated tire properties.
+ * @throws Will throw an error if the tire code format is invalid.
+ *
+ * @example
+ *
+ * parseTireCode('ST205/75R14D');
+ * // Returns:
+ * // {
+ * //   tireCode: 'ST205/75R14D',
+ * //   vehicleClass: 'ST',
+ * //   sectionWidthMM: 205,
+ * //   sectionWidthIn: 8.1,
+ * //   aspectRatio: 0.75,
+ * //   construction: 'R',
+ * //   wheelDiameterIn: 14,
+ * //   tireDiameterIn: 26.2
+ * // }
+ *
+ * @see {@link https://stackoverflow.com/a/66211339 | StackOverflow Reference for the RegEx}
+ */
 export default function parseTireCode(tireCode) {
   const pattern = /(PT|LT|ST|T|)(\d{3})\/(\d{2,3})\s?(B|D|R|)(\d{1,2})/;
   let matches;
@@ -49,5 +75,3 @@ export default function parseTireCode(tireCode) {
     tireDiameterIn,
   };
 }
-
-console.log(parseTireCode("ST205/75R14D"));

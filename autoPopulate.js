@@ -41,8 +41,6 @@ const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
 
                 // Check if file exists
                 if (fs.existsSync(filePath)) {
-                  console.log("File exists", filePath);
-
                   await fileInputElement.focus();
                   await fileInputElement.uploadFile(filePath);
 
@@ -52,7 +50,7 @@ const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
                     inputElement.dispatchEvent(changeEvent);
                   }, fileInputElement);
                 } else {
-                  console.log("File does not exist", filePath);
+                  console.error("File does not exist", filePath);
                 }
               }
             } else {
@@ -71,7 +69,7 @@ const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
       }
 
       if (!found) {
-        console.log(`Key ${key} not found on the page.`);
+        console.error(`Key ${key} not found on the page.`);
       }
     }
 
