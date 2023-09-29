@@ -1,4 +1,0 @@
-this is dummy text line one
-dummy text line two
-line 3 of dummy text
-line four of dummy text

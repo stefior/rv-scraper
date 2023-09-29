@@ -1,12 +1,27 @@
 import puppeteer from "puppeteer";
-import fetch from "node-fetch";
 import fs from "fs";
-import path from "path";
-import { exec } from "child_process";
+import downloadAndConvertImage from "./downloadAndConvertImage";
+import splitAwningMeasurements from "./splitAwningMeasurements";
 
+/*
+workflow for if a site has the data in a single table on each page (many RVs/page):
+1. use the Table Capture chrome extension
+2. copy/paste each table one after another into a single sheets doc
+3. clean it up in there with very simple sheets formulas and find & replace
+4. convert to JSON with csvjson.com/csv2json (may need to check transpose)
+5. use the modules in here to make any other changes necessary en masse
+   (e.g. using the below function's image-downloading ability by emptying the 
+    keylist, or using the tire module)
+6. use databaseAutoEnter to put the JSON data into the database either way
+*/
+
+// for sites that have a single key/value pair on each row (1 RV/page)
+// or sites that have the data in multiple such tables
 (async () => {
   const browser = await puppeteer.launch({ headless: "new" });
 
+  // for new site: it's easiest to open all pages in a new window, then
+  // use Copy All URLs chrome extension, then paste here
   const urls = [
     "https://www.granddesignrv.com/travel-trailers/transcend-xplor/200mk",
     "https://www.granddesignrv.com/travel-trailers/transcend-xplor/221rb",
@@ -75,15 +90,43 @@ import { exec } from "child_process";
     "https://www.granddesignrv.com/toy-haulers/momentum-m-class/398m",
   ];
 
+  // for new site: change these by copying into ChatGPT and telling it to
+  // swap the old keys with the new keyList for current site
+  const keyMapping = {
+    "Exterior Height": "Height closed ftin",
+    "Exterior Length": "Length ftin",
+    "Exterior Width": "Width inmm",
+    "Interior Height": "Interior height in",
+    UVW: "Dry weight lbs",
+    GVWR: "Gvwr lbskgs",
+    "Fresh Water Capacity": "Total fresh water tank capacity gall",
+    "Grey Water Capacity": "Total gray water tank capacity gall",
+    "Waste Water Capacity": "Total black water tank capacity gall",
+    "Propane Tanks": "Number of propane tanks",
+    LPG: "Total propane tank capacity gallbs",
+    "Sleeping Capacity": "Max sleeping count",
+    "Water Heater": "Water heater tank capacity gl",
+    Refrigerator: "Refrigerator size",
+    Furnace: "Heater",
+    AC: "Air conditioning",
+    Axles: "Number of axles",
+    "Standard Bed": "Number of queen size beds",
+    Shower: "Shower",
+    Slides: "Number of slideouts",
+    Awnings: "Number of awnings",
+    "Awning Length": "Awning length ftm",
+  };
+
   for (const url of urls) {
     const page = await browser.newPage();
 
     await page.goto(url);
 
-    const selector = "#detailed-standards-table1 > table";
+    const selector = "table";
     await page.waitForSelector(selector);
-    const extractedData = await page.evaluate(() => {
+    const extractedData = await page.evaluate((url) => {
       const rows = document.querySelectorAll("tbody tr");
+      // for new site: keys for current site can be copied into here
       const keyList = [
         "Exterior Height",
         "Exterior Length",
@@ -102,8 +145,6 @@ import { exec } from "child_process";
         "Furnace",
         "AC",
         "Axles",
-        "Wheel Size",
-        "Tire Size",
         "Standard Bed",
         "Shower",
         "Slides",
@@ -127,79 +168,74 @@ import { exec } from "child_process";
         }
       });
 
-      // Saving the URL for reference
-      data["URL"] = url;
+      data["URL"] = url; // helpful for reference, just in case
 
-      // Extracting the Model of the RV
-      const modelElement = document.querySelector(
-        "#subnav > ul > li.subnav-left__items__item.subnav-left__items__brand > div > span"
-      );
-      data["model"] = modelElement ? modelElement.textContent.trim() : null;
+      data["Make"] = "Grand Design";
+      data["Year"] = "2024";
 
-      // Extracting the Trim of the RV
-      const trimElement = document.querySelector(
-        "#subnav > ul > li.subnav-left__items__item.divide-x.dropdown > button > span"
-      );
-      data["trim"] = trimElement ? trimElement.textContent.trim() : null;
+      // for new site: replace selector for model
+      // (right click in dev tools on the image and choose 'copy selector')
+      const modelElementSelector =
+        "#subnav > ul > li.subnav-left__items__item.subnav-left__items__brand > div > span";
+      const modelElement = document.querySelector(modelElementSelector);
+      data["Model"] = modelElement ? modelElement.textContent.trim() : null;
 
-      // Hardcoded brand name
-      data["brand"] = "Grand Design";
+      // for new site: replace trim selector the same way
+      const trimElementSelector =
+        "#subnav > ul > li.subnav-left__items__item.divide-x.dropdown > button > span";
+      const trimElement = document.querySelector(trimElementSelector);
+      data["Trim"] = trimElement ? trimElement.textContent.trim() : null;
 
-      // Extracting the image
-      const imageElement = document.querySelector(
-        "#floorplan-overhead > p > img"
-      );
+      // for new site: replace image selector the same way
+      const imageElementSelector = "#floorplan-overhead > p > img";
+      const imageElement = document.querySelector(imageElementSelector);
       if (imageElement) {
         data["imageURL"] = imageElement.src;
-        data["imageFileName"] = `${data.model.replace(/\s/g, "_")}__${
-          data.trim
-        }`;
+        data["Floor plan"] = `${data.Model.replace(/\s/g, "_")}__${
+          data["Trim"]
+        }.png`;
       } else {
         data["imageURL"] = null;
       }
 
-      return data;
-    });
+      const renamedData = Object.keys(data).reduce((acc, key) => {
+        const newKey = keyMapping[key] || key;
+        acc[newKey] = extractedData[key];
+        return acc;
+      }, {});
 
-    async function downloadAndConvertImage(url, filename) {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const ext = path.extname(url).toLowerCase();
-
-      // Ensure 'images' directory exists
-      if (!fs.existsSync("images")) {
-        fs.mkdirSync("images");
-      }
-
-      const savePath = path.join("images", `${filename}${ext}`);
-      fs.writeFileSync(savePath, buffer);
-
-      // Convert to PNG if not PNG
-      if (ext !== ".png") {
-        const pngPath = path.join("images", `${filename}.png`);
-        exec(`magick ${savePath} ${pngPath}`, (error, stdout, stderr) => {
-          if (error) {
-            console.error(`Error converting image to PNG: ${error}`);
-            return;
-          }
-          // Delete the original non-PNG image
-          fs.unlinkSync(savePath);
-        });
-      }
-    }
+      return renamedData;
+    }, url);
 
     await downloadAndConvertImage(
       extractedData.imageURL,
-      extractedData.imageFileName
+      extractedData["Floor plan"]
     );
 
-    fs.appendFileSync("output.json", JSON.stringify(extractedData, null, 4));
+    if ("Awning length ftm" in extractedData) {
+      extractedData["Awning length ftm"] = splitAwningMeasurements(
+        extractedData["Awning length ftm"]
+      );
+    }
+
+    // Add the next data object to the file
+    const outputFile = `${extractedData.Make}.json`;
+    let index = urls.indexOf(url);
+    if (index === 0) {
+      fs.appendFileSync(outputFile, "[");
+    }
+    fs.appendFileSync(
+      outputFile,
+      JSON.stringify(renamedExtractedData, null, 4)
+    );
+    if (index === urls.length - 1) {
+      fs.appendFileSync(outputFile, "]");
+    } else {
+      fs.appendFileSync(outputFile, ",");
+    }
 
     console.log(
-      `Scraped and saved data for ${urls.indexOf(url) + 1} of ${
-        urls.length + 1
-      }`
+      `Scraped and saved data for ${urls.indexOf(url) + 1} of ${urls.length}`
     );
 
     await page.close();
