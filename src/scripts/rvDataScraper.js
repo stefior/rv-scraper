@@ -5,6 +5,7 @@ import path from "path";
 import downloadAndConvertToPng from "../helpers/downloadAndConvertToPng.js";
 import splitAwningMeasurements from "../helpers/splitAwningMeasurements.js";
 import parseTireCode from "../helpers/parseTireCode.js";
+import addMissingGvwrUvwCcc from "../helpers/addMissingGvwrUvwCcc.js"
 
 /*
 Workflow for if a site has the data in a single table on each page (many RVs/page):
@@ -160,10 +161,12 @@ async function rvDataScraper(urls, keyMappings, outputFolder) {
       );
     }
 
+    addMissingGvwrUvwCcc(extractedData);
+
     if ("Tire code" in extractedData) {
       const tireData = parseTireCode(extractedData["Tire code"]);
       extractedData["Rear tire diameter in"] = tireData.tireDiameterIn;
-      // wheel width and wheel diameter are different, but I think diameter is what was meant
+      // wheel width and wheel diameter are different, but diameter is likely what was meant
       extractedData["Rear wheel width in"] = tireData.wheelDiameterIn;
     }
 
