@@ -2,10 +2,9 @@ import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
 
-const inputFile = "output.json";
-const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
+async function autoPopulate(inputFile) {
+  const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
 
-(async () => {
   // It doesn't use a headless browser currently, so
   // I can verify visually that each was posted without issue
   const browser = await puppeteer.launch({ headless: false });
@@ -37,9 +36,8 @@ const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
                 "input[name=floor_plan][type=file]"
               );
               if (fileInputElement) {
-                const filePath = path.resolve("images", String(value));
+                const filePath = path.resolve("images", value + ".png");
 
-                // Check if file exists
                 if (fs.existsSync(filePath)) {
                   await fileInputElement.focus();
                   await fileInputElement.uploadFile(filePath);
@@ -78,4 +76,4 @@ const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
       page = await browser.newPage();
     }
   }
-})();
+}

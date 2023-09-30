@@ -1,4 +1,4 @@
-import parseTireCode from "./parseTireCode";
+import parseTireCode from "../helpers/parseTireCode";
 
 describe("parseTireCode", () => {
   it("should parse a valid tire code and return the correct data", () => {
