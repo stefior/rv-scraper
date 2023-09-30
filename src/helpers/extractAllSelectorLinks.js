@@ -1,69 +1,75 @@
 import puppeteer from "puppeteer";
 
-export default async function extractAllSelectorLinks(urls, selector) {
-  if (!Array.isArray(urls)) {
-    throw new Error("Invalid input: urls should be an array");
-  }
-  if (typeof selector !== "string") {
-    throw new Error("Invalid input: selector should be a string");
+// TODO: add rate limiter
+export default async function extractAllSelectorLinks(urlsObject) {
+  if (typeof urlsObject !== "object" || Array.isArray(urlsObject)) {
+    throw new Error("Invalid input: urls should be an object");
   }
 
   const browser = await puppeteer.launch({ headless: "new" });
-  const allLinks = [...urls];
-
   process.stdout.write("Extracting URLs...");
-  const allMappedLinks = await Promise.all(
-    allLinks.map((url) => {
-      return (async () => {
-        try {
-          const page = await browser.newPage();
-          await page.goto(url);
 
-          await page.waitForSelector(selector);
-          const links = await page.$$eval(selector, (allAs) => {
-            const arr = [];
-            for (a of allAs) {
-              arr.push(a.href);
-            }
-            return arr;
-          });
+  const allMappedLinks = [];
+  for (const selector in urlsObject) {
+    const allLinksForGroup = [...urlsObject[selector]];
 
-          process.stdout.write(".");
-          await page.close();
-          return links;
-        } catch (err) {
-          console.error(`Error extracting urls for ${url}\n${err}`);
-          return [];
-        }
-      })();
-    })
-  );
+    const allMappedLinksForGroup = await Promise.all(
+      allLinksForGroup.map((url) => {
+        return (async () => {
+          try {
+            const page = await browser.newPage();
+            await page.goto(url);
+
+            await page.waitForSelector(selector);
+            const links = await page.$$eval(selector, (allAs) => {
+              const arr = [];
+              for (const a of allAs) {
+                arr.push(a.href);
+              }
+              return arr;
+            });
+
+            process.stdout.write(".");
+            await page.close();
+            return links;
+          } catch (err) {
+            console.error(`Error extracting urls for ${url}\n${err}`);
+            return [];
+          }
+        })();
+      })
+    );
+    allMappedLinks.push(...allMappedLinksForGroup.flat());
+  }
 
   console.log("\n");
-  browser.close();
+  await browser.close();
   return allMappedLinks.flat();
 }
 
-// TODO: get this to work with multiple sites, which would be easy, since it could just take an
-// object or an array, then if it's an object it just uses the key for each object as the
-// selector with the property being the array of urls for that selector
-
 // Can use Copy All URLs (free) chrome extension for getting the main pages that
-// you want the links from, then use multicursor in VS code to easily turn it into an array
+// you want the links from, then use multi cursor in VS code to easily turn it into an array
 // e.g. Ctrl + Alt + Up/Down, then home/end to add the quotes and commas
-const urls = [
-  "https://www.granddesignrv.com/travel-trailers/reflection",
-  "https://www.granddesignrv.com/travel-trailers/imagine",
-  "https://www.granddesignrv.com/travel-trailers/imagine-xls",
-  "https://www.granddesignrv.com/travel-trailers/imagine-aim",
-  "https://www.granddesignrv.com/travel-trailers/transcend-xplor",
-  "https://www.granddesignrv.com/fifth-wheels/solitude",
-  "https://www.granddesignrv.com/fifth-wheels/reflection",
-  "https://www.granddesignrv.com/fifth-wheels/reflection-150-series",
-];
+const urls = {
+  "div.specCell.button-specCell-desktop > a": [
+    "https://www.granddesignrv.com/travel-trailers/reflection",
+    "https://www.granddesignrv.com/travel-trailers/imagine",
+    "https://www.granddesignrv.com/travel-trailers/imagine-xls",
+    "https://www.granddesignrv.com/travel-trailers/imagine-aim",
+    "https://www.granddesignrv.com/travel-trailers/transcend-xplor",
+    "https://www.granddesignrv.com/fifth-wheels/solitude",
+    "https://www.granddesignrv.com/fifth-wheels/reflection",
+    "https://www.granddesignrv.com/fifth-wheels/reflection-150-series",
+  ],
+  "div.ls-layers > div > div > a": [
+    "https://www.outdoorsrvmfg.com/back-country-class/",
+    "https://www.outdoorsrvmfg.com/blackstone-2/",
+    "https://www.outdoorsrvmfg.com/creek-side/",
+    "https://www.outdoorsrvmfg.com/timber-ridge/",
+  ],
+};
 // Remember, this is the selector that applies to all of the links, not just one,
 // so after copying the selector in dev tools the extra first part needs to be deleted
-const selector = "div.specCell.button-specCell-desktop > a";
 
-const result = await extractAllSelectorLinks(urls, selector);
+const result = await extractAllSelectorLinks(urls);
 console.log(result);
