@@ -2,7 +2,27 @@ import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
 
-async function autoPopulate(inputFile) {
+
+const formPageUrl = "http://127.0.0.1:5500/testing.html";
+
+/**
+ * Automatically populates fields on a webpage with data from a JSON file using a non-headless browser.
+ *
+ * @param {string} inputFile - The path of the JSON file containing the data to be populated.
+ * @param {string} formPageUrl - The URL of the webpage where the data is to be populated.
+ *
+ * @throws Will throw an error if the inputFile does not exist, if there's an issue reading the JSON data,
+ *         or if there are issues interacting with the webpage or uploading files.
+ *
+ * @async
+ * @example
+ * 
+
+ * // Populates fields on the webpage at the specified URL with data from input.json.
+ * // It will automatically open a new tab for each object in the JSON array.
+ * 
+ */
+export default async function autoPopulate(inputFile, formPageUrl) {
   const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
 
   // It doesn't use a headless browser currently, so
@@ -11,8 +31,7 @@ async function autoPopulate(inputFile) {
   let page = await browser.newPage();
 
   for (const dataObject of jsonData) {
-    await page.goto("http://127.0.0.1:5500/testing.html");
-
+    await page.goto(formPageUrl);
 
     for (const [key, value] of Object.entries(dataObject)) {
       const trElements = await page.$$("tr");
