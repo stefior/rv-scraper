@@ -29,6 +29,8 @@ function askQuestion(rl) {
  *     console.log('User does not want to continue.');
  *   }
  * });
+ * 
+ * This is useful for debugging purposes.
  */
 export default function waitForUserInput() {
   const rl = readline.createInterface(process.stdin, process.stdout);
