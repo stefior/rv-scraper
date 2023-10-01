@@ -3,6 +3,7 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
+    "bottleneck": "^2.19.5",
     "csv-parser": "^3.0.0",
     "node-fetch": "^3.3.2",
     "puppeteer": "^21.3.5"
