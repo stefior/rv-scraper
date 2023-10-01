@@ -2,124 +2,129 @@ import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
 
-import downloadAndConvertToPng from "../helpers/downloadAndConvertToPng.js";
-import splitAwningMeasurements from "../helpers/splitAwningMeasurements.js";
-import parseTireCode from "../helpers/parseTireCode.js";
-import addMissingGvwrUvwCcc from "../helpers/addMissingGvwrUvwCcc.js";
-import getRvTypeFromUrl from "../helpers/getRVTypeFromURL.js";
+import {
+  downloadAndConvertToPng,
+  splitAwningMeasurements,
+  parseTireCode,
+  addMissingGvwrUvwCcc,
+  getRvTypeFromUrl,
+  setupAndSaveSiteSelectors,
+} from "../helpers/";
 
-/*
-Workflow for if a site has the data in a single table on each page (many RVs/page):
-1. use the Table Capture chrome extension
-2. copy/paste each table one after another into a single sheets doc
-3. clean it up in there with very simple sheets formulas and find & replace
-4. convert to JSON with csvjson.com/csv2json (may need to check transpose)
-5. use the modules and shortcuts in here to make any other changes necessary
-6. use autoPopulate.js to put the JSON data into the database either way
-*/
+////////////////////////////////////
+const knownSiteMappings = {
+  granddesignrv: [],
+  keystonerv: [],
+  outdoorsrvmfg: [],
+};
+////////////////////////////////////
 
-// For sites that have a single key/value pair on each row (1 RV/page)
-// or sites that have the data in multiple such tables
-
-// TODO: add error checking for inputs, or default values
+// NOTE TO SELF: The purpose of this function isn't 100% automation, but for partial automation where the user is prompted from the console for all cases where it isn't sure. The user shouldn't need to edit the JSON, but they will definitely sometimes need to provide input, at least for the first time per site.
 async function rvDataScraper({
   urls,
+  knownSiteMappings,
   keyMappings,
-  make,
-  typeSelector,
-  modelSelector,
-  trimSelector,
-  imageSelector,
   outputFolder = "./output",
 }) {
   const browser = await puppeteer.launch({ headless: "new" });
 
   for (const url of urls) {
     const page = await browser.newPage();
-
     await page.goto(url);
 
     await page.waitForSelector("table");
     const extractedData = await page.evaluate(
       (url, keyMappings) => {
-        const rows = document.querySelectorAll("tbody tr");
-        const keyList = Object.keys(keyMappings);
+        (async () => {
+          const [
+            Make,
+            typeSelector,
+            modelSelector,
+            trimSelector,
+            imageSelector,
+          ] = await setupAndSaveSiteSelectors(knownSiteMappings);
+          const urlTail = url
+            .split("/")
+            .filter((section) => section != "")
+            .slice(-1)[0];
 
-        const data = {};
+          const rows = document.querySelectorAll("tbody tr");
+          const keyList = Object.keys(keyMappings);
 
-        rows.forEach((row) => {
-          const keyCell = row.querySelector("td:nth-child(1)");
-          const valueCell = row.querySelector("td:nth-child(2)");
+          const data = {};
+          // To store keys in the final object for what things may need to be manually verified or edited (e.g. with find and replace on part of the string)
+          data.verifyManually = [];
 
-          if (keyCell && valueCell) {
-            const key = keyCell.textContent.trim();
-            const value = valueCell.textContent.trim();
+          rows.forEach((row) => {
+            const keyCell = row.querySelector("td:nth-child(1)");
+            const valueCell = row.querySelector("td:nth-child(2)");
 
-            if (keyList.includes(key)) {
-              data[key] = value;
+            if (keyCell && valueCell) {
+              const key = keyCell.textContent.trim();
+              const value = valueCell.textContent.trim();
+
+              // CURRENTLY EDITING:
+              if (keyList.includes(key)) {
+                data[key] = value;
+              }
+            }
+          });
+
+          data["URL"] = url;
+          // TODO: don't hardcode so there isn't an issue if this is used next year or on previous years
+          data["Year"] = "2024";
+          data["Make"] = Make;
+
+          if (typeSelector) {
+            const typeSelector = document.querySelector(typeSelector);
+            const text = typeElement.textContent.trim();
+            data["Type"] = text ? text : undefined;
+          } else {
+            data["Type"] = getRvTypeFromUrl(url);
+          }
+
+          if (modelSelector) {
+            const modelElement = document.querySelector(modelSelector);
+            const text = modelElement.textContent.trim();
+            data["Model"] = text ? text : undefined;
+          } else {
+            data["Model"] = undefined;
+          }
+
+          if (trimSelector) {
+            const trimElement = document.querySelector(trimSelector);
+            const text = trimElement.textContent.trim();
+            data["Trim"] = text ? text : undefined;
+          } else {
+            // Some sites don't have the trim on the page, but it's usually at the end of the url
+            data["Trim"] = urlTail;
+            data.verifyManually.push("Trim");
+          }
+
+          data["Name"] = `${data.Year} ${data.Make} ${data.Model} ${data.Trim}`;
+
+          if (imageSelector) {
+            const imageElement = document.querySelector(imageSelector);
+            data["imageURL"] = imageElement.src;
+            data["Floor plan"] = `${urlTail}`;
+          } else {
+            data["imageURL"] = undefined;
+          }
+
+          const renamedData = Object.keys(data).reduce((acc, key) => {
+            const newKey = keyMappings[key] || key;
+            acc[newKey] = data[key];
+            return acc;
+          }, {});
+
+          for (key in renamedData) {
+            if (renamedData.key === undefined) {
+              data.verifyManually.push(`${key}`);
             }
           }
-        });
 
-        data["URL"] = url;
-        data["Year"] = "2024";
-
-        if (make) {
-          data["Make"] = make;
-        } else {
-          data["Make"] = window.location.hostname.split(".").reverse()[1];
-        }
-
-        if (typeSelector) {
-          const typeSelector = document.querySelector(typeSelector);
-          data["Type"] = typeElement
-            ? typeElement.textContent.trim()
-            : undefined;
-        } else {
-          data["Type"] = getRvTypeFromUrl(url);
-        }
-
-        if (modelSelector) {
-          const modelElement = document.querySelector(modelSelector);
-          data["Model"] = modelElement
-            ? modelElement.textContent.trim()
-            : undefined;
-        } else {
-          data["Model"] = undefined;
-        }
-
-        if (trimSelector) {
-          const trimElement = document.querySelector(trimSelector);
-          data["Trim"] = trimElement
-            ? trimElement.textContent.trim()
-            : undefined;
-        } else {
-          const pathParts = window.location.pathname.split("/");
-          const lastPart = pathParts[pathParts.length - 1];
-          data["Trim"] = lastPart !== "" ? lastPart : undefined;
-        }
-
-        data["Name"] = `${data.Year} ${data.Make} ${data.Model} ${data.Trim}`;
-
-        const imageElement = document.querySelector(imageSelector);
-        const urlTail = url
-          .split("/")
-          .filter((section) => section != "")
-          .slice(-1)[0];
-        if (imageElement) {
-          data["imageURL"] = imageElement.src;
-          data["Floor plan"] = `${urlTail}`;
-        } else {
-          data["imageURL"] = undefined;
-        }
-
-        const renamedData = Object.keys(data).reduce((acc, key) => {
-          const newKey = keyMappings[key] || key;
-          acc[newKey] = data[key];
-          return acc;
-        }, {});
-
-        return renamedData;
+          return renamedData;
+        })();
       },
       url,
       keyMappings
@@ -217,8 +222,22 @@ const keyMappings = {
   "Good Year Tire Size": "Tire code",
 };
 
+// it should only match the words in the value array, not try to match the main key
+const synonymDictionary = {
+  "Dry weight lbs": ["dry weight", "UVW", "unloaded vehicle weight"],
+  "Gvwr lbskgs": [
+    "Maximum Trailer Weight",
+    "gvwr",
+    "max trailer weight",
+    "gross vehicle weight rating",
+    "gross weight",
+  ],
+};
+
+// for formatting step, DISREGARD FOR NOW
 // TODO: verify this is accurate
 // TODO: apply a function to make sure each of these is converted properly
+// (leave note on final set that if the field names change this part should be changed and the dictionary needs to be reset)
 const standardizedFieldNames = {
   Year: "number",
   Make: "string",
@@ -254,7 +273,7 @@ const standardizedFieldNames = {
   "Wheels composition": "string",
   "Front wheel width in": "inches",
   "Rear wheel width in": "inches",
-  Tires: "string",
+  Tires: "string", ///////// how to handle tireData?
   "Rear tire diameter in": "inches",
   "Front tire diameter in": "inches",
   Brakes: "string",
