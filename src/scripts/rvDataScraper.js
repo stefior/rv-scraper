@@ -12,7 +12,7 @@ import {
   setupAndSaveSiteSelectors,
 } from "../helpers/";
 
-function promptUser(unrecognizedField) {
+function promptUser(unrecognizedKey) {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({
       input: process.stdin,
@@ -21,17 +21,17 @@ function promptUser(unrecognizedField) {
 
     function ask() {
       rl.question(
-        `Unrecognized field: '${unrecognizedField}'\nPlease enter the standard field name: `,
+        `Unrecognized key: '${unrecognizedKey}'\nPlease enter the standard key name: `,
         (userInput) => {
-          const standardFieldName = userInput.trim();
-          if (Object.keys(synonymDictionary).includes(standardFieldName)) {
+          const standardKeyName = userInput.trim();
+          if (Object.keys(synonymDictionary).includes(standardKeyName)) {
             console.log(
-              `Mapping confirmed ('${unrecognizedField}' -> '${standardFieldName}')`
+              `Mapping confirmed ('${unrecognizedKey}' -> '${standardKeyName}')`
             );
             rl.close();
-            resolve(standardFieldName);
+            resolve(standardKeyName);
           } else {
-            console.log("Standard field name invalid. Try again:\n");
+            console.log("Standard key name invalid. Try again:\n");
             ask();
           }
         }
@@ -136,12 +136,12 @@ async function rvDataScraper({
             data["imageURL"] = null;
           }
 
-          // For each key in the extracted data
+          // Rename each of the keys in the extracted data to correspond with the database keys
           for (currentKey in Object.keys(data)) {
-            // If the key is in the saved keys for that host name
+            data[currentKey] = formatValue(data[currentKey])
             if (currentKey in knownKeyMappings) {
               // Change the key name in the extracted data to the one for the database
-              const newKeyName = knownKeyMappings[currentKey];
+              const newKeyName = knownKeyMappings[currentKey];              
               data[newKeyName] = data.currentKey;
               delete data.currentKey;
             } else {
@@ -186,8 +186,8 @@ async function rvDataScraper({
 
     addMissingGvwrUvwCcc(extractedData);
 
-    if ("Tire code" in extractedData) {
-      const tireData = parseTireCode(extractedData["Tire code"]);
+    if ("Tires" in extractedData) {
+      const tireData = parseTireCode(extractedData["Tires"]);
       extractedData["Rear tire diameter in"] = tireData.tireDiameterIn;
       // Wheel width and wheel diameter are different, but diameter is likely what was meant
       extractedData["Rear wheel width in"] = tireData.wheelDiameterIn;

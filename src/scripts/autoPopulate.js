@@ -21,7 +21,11 @@ import waitForUserInput from "../helpers/waitForUserInput.js";
  * // It will automatically open a new tab for each object in the JSON array.
  *
  */
-export default async function autoPopulate(inputFile, formPageUrl) {
+export default async function autoPopulate(
+  inputFile,
+  formPageUrl,
+  standardizedValues
+) {
   const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
 
   // Not headless so I can verify visually that each was posted without issue
@@ -46,11 +50,13 @@ export default async function autoPopulate(inputFile, formPageUrl) {
             (el) => el.textContent,
             tdElement
           );
-          
-          if (!(textContent in Object.keys(synonymDictionary))) {
-            throw new Error("Key name in database that isn't in known options.\nEither a key was added or the name of a key was changed on that side.")
+
+          if (!(textContent in Object.keys(standardizedValues))) {
+            console.error(
+              `Error: Key name in database that isn't in known options.\nEither a key was added or the name was changed.\n Key name: ${textContent}`
+            );
           }
-          
+
           if (textContent.includes(key)) {
             found = true;
 
@@ -133,6 +139,6 @@ export default async function autoPopulate(inputFile, formPageUrl) {
 }
 
 
-const formPageUrl = "http://127.0.0.1:5500/testing.html";
-
-autoPopulate("./output/testing.json", formPageUrl);
+// const formPageUrl = "http://127.0.0.1:5500/testing.html";
+// const standardizedValues = 
+// autoPopulate("./output/testing.json", formPageUrl, standardizedValues);

@@ -4,7 +4,8 @@
     "typeSelector": "div.type",
     "modelSelector": "div.model",
     "trimSelector": "div.trim",
-    "imageSelector": "img.main"
+    "imageSelector": "img.main",
+    "knownKeyMappings": {}
   },
   "outdoorsrvmfg": {
     "Make": "Outdoors RV",
@@ -26,7 +27,7 @@
       "Water Heater Capacity (approx. gal)": "Water heater tank capacity gl",
       "Climate Designed Furnace": "Heater",
       "Heavy Duty 5 Lug Axles (lbs)": "Number of axles",
-      "Good Year Tire Size": "Tire code"
+      "Good Year Tire Size": "Tires"
     }
   }
 }

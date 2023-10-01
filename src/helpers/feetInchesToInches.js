@@ -5,7 +5,7 @@
  *
  * @throws Will throw an error if the input format is invalid.
  *
- * @returns {number} The measurement in inches.
+ * @returns {number} The measurement in inches, rounded to the nearest tenth.
  *
  * @example
  *
@@ -35,5 +35,5 @@ export default function feetInchesToInches(feetInches) {
   const feet = parseFloat(matches[1]);
   const inches = matches[2] ? parseFloat(matches[2]) : 0;
 
-  return feet * 12 + inches;
+  return Math.round((feet * 12 + inches) * 10) / 10;
 }
