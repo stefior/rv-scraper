@@ -10,11 +10,11 @@ function promptUser(variableName) {
 
       function ask() {
         rl.question(
-          `Please enter a value for ${variableName}, or else undefined: `,
+          `Please enter a value for ${variableName}, or else null: `,
           (answer) => {
-            if (answer.trim().includes("undefined")) {
+            if (answer.trim().includes("null")) {
               rl.close();
-              resolve(undefined);
+              resolve(null);
             } else if (answer.trim() === "") {
               console.log("Input cannot be empty. Please try again.");
               ask();
@@ -46,8 +46,8 @@ function promptUser(variableName) {
  * containing site-specific selector strings.
  * @param {Window} window - A reference to the browser window object.
  *
- * @returns {Promise<Array<string|undefined>>} - A promise that resolves to an array of
- * site-specific selector strings or undefined values for the current domain.
+ * @returns {Promise<Array<string|null>>} - A promise that resolves to an array of
+ * site-specific selector strings or null values for the current domain.
  *
  * @example
  *
@@ -57,7 +57,8 @@ function promptUser(variableName) {
  *     typeSelector: 'div.type',
  *     modelSelector: 'div.model',
  *     trimSelector: 'div.trim',
- *     imageSelector: 'img.main'
+ *     imageSelector: 'img.main',
+ *     knownSiteMappings: {}
  *   }
  * };
  *
@@ -76,30 +77,33 @@ export default async function setupAndSaveSiteSelectors(
     .reverse()[1];
 
   if (hostName in knownSiteMappings) {
-    const siteMapping = knownSiteMappings[hostName];
     return [
-      siteMapping["Make"],
-      siteMapping.typeSelector,
-      siteMapping.modelSelector,
-      siteMapping.trimSelector,
-      siteMapping.imageSelector,
+      knownSiteMappings[hostName]["Make"],
+      knownSiteMappings[hostName].typeSelector,
+      knownSiteMappings[hostName].modelSelector,
+      knownSiteMappings[hostName].trimSelector,
+      knownSiteMappings[hostName].imageSelector,
     ];
   } else {
     console.log(`Enter site selectors for new domain (${window.origin})`);
-    knownSiteMappings[hostName] = [];
-    const newSiteMapping = knownSiteMappings[hostName];
-    newSiteMapping["Make"] = await promptUser("Make");
-    newSiteMapping.typeSelector = await promptUser("typeSelector");
-    newSiteMapping.modelSelector = await promptUser("modelSelector");
-    newSiteMapping.trimSelector = await promptUser("trimSelector");
-    newSiteMapping.imageSelector = await promptUser("imageSelector");
+
+    knownSiteMappings[hostName] = {};
+
+    // New site mappings
+    knownSiteMappings[hostName]["Make"] = await promptUser("Make");
+    knownSiteMappings[hostName].typeSelector = await promptUser("typeSelector");
+    knownSiteMappings[hostName].modelSelector = await promptUser("modelSelector");
+    knownSiteMappings[hostName].trimSelector = await promptUser("trimSelector");
+    knownSiteMappings[hostName].imageSelector = await promptUser("imageSelector");
+    knownSiteMappings[hostName].knownKeyMappings = {};
+
 
     return [
-      newSiteMapping.Make,
-      newSiteMapping.typeSelector,
-      newSiteMapping.modelSelector,
-      newSiteMapping.trimSelector,
-      newSiteMapping.imageSelector,
+      knownSiteMappings[hostName].Make,
+      knownSiteMappings[hostName].typeSelector,
+      knownSiteMappings[hostName].modelSelector,
+      knownSiteMappings[hostName].trimSelector,
+      knownSiteMappings[hostName].imageSelector,
     ];
   }
 }
