@@ -70,6 +70,7 @@ async function rvDataScraper({
             modelSelector,
             trimSelector,
             imageSelector,
+            descriptionSelector,
           ] = await setupAndSaveSiteSelectors(knownSiteMappings);
           const urlTail = url
             .split("/")
@@ -91,7 +92,7 @@ async function rvDataScraper({
               const key = keyCell.textContent.trim();
               const value = valueCell.textContent.trim();
 
-              // Grab it all, then deal with it after
+              // Grab it all now, then just use what's useful later
               data[key] = value;
             }
           });
@@ -100,8 +101,17 @@ async function rvDataScraper({
           data["Year"] = rvYear;
           data["Make"] = Make;
 
+          if (descriptionSelector) {
+            const descriptionElement =
+              document.querySelector(descriptionSelector);
+            const text = descriptionElement.textContent.trim();
+            data["Web Description"] = text ? text : null;
+          } else {
+            data["Web Description"] = null;
+          }
+
           if (typeSelector) {
-            const typeSelector = document.querySelector(typeSelector);
+            const typeElement = document.querySelector(typeSelector);
             const text = typeElement.textContent.trim();
             data["Type"] = text ? text : null;
           } else {
@@ -138,10 +148,10 @@ async function rvDataScraper({
 
           // Rename each of the keys in the extracted data to correspond with the database keys
           for (currentKey in Object.keys(data)) {
-            data[currentKey] = formatValue(data[currentKey])
+            data[currentKey] = formatValue(data[currentKey]);
             if (currentKey in knownKeyMappings) {
               // Change the key name in the extracted data to the one for the database
-              const newKeyName = knownKeyMappings[currentKey];              
+              const newKeyName = knownKeyMappings[currentKey];
               data[newKeyName] = data.currentKey;
               delete data.currentKey;
             } else {

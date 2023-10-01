@@ -58,6 +58,7 @@ function promptUser(variableName) {
  *     modelSelector: 'div.model',
  *     trimSelector: 'div.trim',
  *     imageSelector: 'img.main',
+ *     descriptionSelector: 'div.description'
  *     knownSiteMappings: {}
  *   }
  * };
@@ -83,6 +84,7 @@ export default async function setupAndSaveSiteSelectors(
       knownSiteMappings[hostName].modelSelector,
       knownSiteMappings[hostName].trimSelector,
       knownSiteMappings[hostName].imageSelector,
+      knownSiteMappings[hostName].descriptionSelector,
     ];
   } else {
     console.log(`Enter site selectors for new domain (${window.origin})`);
@@ -92,11 +94,17 @@ export default async function setupAndSaveSiteSelectors(
     // New site mappings
     knownSiteMappings[hostName]["Make"] = await promptUser("Make");
     knownSiteMappings[hostName].typeSelector = await promptUser("typeSelector");
-    knownSiteMappings[hostName].modelSelector = await promptUser("modelSelector");
+    knownSiteMappings[hostName].modelSelector = await promptUser(
+      "modelSelector"
+    );
     knownSiteMappings[hostName].trimSelector = await promptUser("trimSelector");
-    knownSiteMappings[hostName].imageSelector = await promptUser("imageSelector");
+    knownSiteMappings[hostName].imageSelector = await promptUser(
+      "imageSelector"
+    );
+    knownSiteMappings[hostName].descriptionSelector = await promptUser(
+      "descriptionSelector"
+    );
     knownSiteMappings[hostName].knownKeyMappings = {};
-
 
     return [
       knownSiteMappings[hostName].Make,
@@ -104,6 +112,7 @@ export default async function setupAndSaveSiteSelectors(
       knownSiteMappings[hostName].modelSelector,
       knownSiteMappings[hostName].trimSelector,
       knownSiteMappings[hostName].imageSelector,
+      knownSiteMappings[hostName].descriptionSelector,
     ];
   }
 }

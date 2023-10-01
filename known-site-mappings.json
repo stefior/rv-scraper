@@ -5,6 +5,7 @@
     "modelSelector": "div.model",
     "trimSelector": "div.trim",
     "imageSelector": "img.main",
+    "descriptionSelector": null,
     "knownKeyMappings": {}
   },
   "outdoorsrvmfg": {
@@ -13,6 +14,7 @@
     "modelSelector": "body > div.wrapper > div > div > div > div > div > section > div:nth-child(9) > div > div.wpb_column.vc_column_container.vc_col-sm-6 > div > div > div:nth-child(1) > div > h1",
     "trimSelector": "body > div.wrapper > div > div > div > div > div > section > div:nth-child(9) > div > div.wpb_column.vc_column_container.vc_col-sm-6 > div > div > div:nth-child(1) > div > h1",
     "imageSelector": "body > div.wrapper > div > div > div > div > div > section > div:nth-child(4) > div > div:nth-child(2) > div > div > div.wpb_single_image.wpb_content_element.vc_align_center > div > a > div > img",
+    "descriptionSelector": null,
     "knownKeyMappings": {
       "Exterior Height": "Height closed ftin",
       "Exterior Length (approx. hitch to back of bumper)": "Length ftin",
