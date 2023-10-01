@@ -34,20 +34,20 @@ function promptUser(variableName) {
 }
 
 /**
- * Fetches or prompts the user to provide site-specific selector
+ * Fetches or prompts the user to provide domain-specific selector
  * values for a given domain, which are used to scrape data from that domain.
  *
  * It first checks if the domain is already known by looking up the hostname in the provided
- * knownSiteMappings object. If found, it returns the known selectors for that domain.
- * If not found, it prompts the user to provide these selectors, saves them to knownSiteMappings,
+ * knownDomainMappings object. If found, it returns the known selectors for that domain.
+ * If not found, it prompts the user to provide these selectors, saves them to knownDomainMappings,
  * and then returns them.
  *
- * @param {object} knownSiteMappings - An object where keys are hostnames and values are objects
- * containing site-specific selector strings.
+ * @param {object} knownDomainMappings - An object where keys are hostnames and values are objects
+ * containing domain-specific selector strings.
  * @param {Window} window - A reference to the browser window object.
  *
  * @returns {Promise<Array<string|null>>} - A promise that resolves to an array of
- * site-specific selector strings or null values for the current domain.
+ * domain-specific selector strings or null values for the current domain.
  *
  * @example
  *
@@ -59,7 +59,7 @@ function promptUser(variableName) {
  *     trimSelector: 'div.trim',
  *     imageSelector: 'img.main',
  *     descriptionSelector: 'div.description'
- *     knownSiteMappings: {}
+ *     knownDomainMappings: {}
  *   }
  * };
  *
@@ -69,7 +69,7 @@ function promptUser(variableName) {
  *   });
  */
 export default async function setupAndSaveSiteSelectors(
-  knownSiteMappings,
+  knownDomainMappings,
   window
 ) {
   const hostName = window.location.hostname
@@ -77,42 +77,34 @@ export default async function setupAndSaveSiteSelectors(
     .split(".")
     .reverse()[1];
 
-  if (hostName in knownSiteMappings) {
-    return [
-      knownSiteMappings[hostName]["Make"],
-      knownSiteMappings[hostName].typeSelector,
-      knownSiteMappings[hostName].modelSelector,
-      knownSiteMappings[hostName].trimSelector,
-      knownSiteMappings[hostName].imageSelector,
-      knownSiteMappings[hostName].descriptionSelector,
-    ];
+  let siteMapping;
+
+  if (hostName in knownDomainMappings) {
+    siteMapping = knownDomainMappings[hostName];
   } else {
     console.log(`Enter site selectors for new domain (${window.origin})`);
 
-    knownSiteMappings[hostName] = {};
+    // Initialize a new object for this host
+    siteMapping = {
+      Make: await promptUser("Make"),
+      typeSelector: await promptUser("typeSelector"),
+      modelSelector: await promptUser("modelSelector"),
+      trimSelector: await promptUser("trimSelector"),
+      imageSelector: await promptUser("imageSelector"),
+      descriptionSelector: await promptUser("descriptionSelector"),
+      knownKeyMappings: {},
+    };
 
-    // New site mappings
-    knownSiteMappings[hostName]["Make"] = await promptUser("Make");
-    knownSiteMappings[hostName].typeSelector = await promptUser("typeSelector");
-    knownSiteMappings[hostName].modelSelector = await promptUser(
-      "modelSelector"
-    );
-    knownSiteMappings[hostName].trimSelector = await promptUser("trimSelector");
-    knownSiteMappings[hostName].imageSelector = await promptUser(
-      "imageSelector"
-    );
-    knownSiteMappings[hostName].descriptionSelector = await promptUser(
-      "descriptionSelector"
-    );
-    knownSiteMappings[hostName].knownKeyMappings = {};
-
-    return [
-      knownSiteMappings[hostName].Make,
-      knownSiteMappings[hostName].typeSelector,
-      knownSiteMappings[hostName].modelSelector,
-      knownSiteMappings[hostName].trimSelector,
-      knownSiteMappings[hostName].imageSelector,
-      knownSiteMappings[hostName].descriptionSelector,
-    ];
+    // Save the new siteMapping object back to knownDomainMappings
+    knownDomainMappings[hostName] = siteMapping;
   }
+
+  return [
+    siteMapping.Make,
+    siteMapping.typeSelector,
+    siteMapping.modelSelector,
+    siteMapping.trimSelector,
+    siteMapping.imageSelector,
+    siteMapping.descriptionSelector,
+  ];
 }

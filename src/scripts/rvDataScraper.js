@@ -42,11 +42,32 @@ function promptUser(unrecognizedKey) {
   });
 }
 
-// NOTE TO SELF: The purpose of this function isn't 100% automation, but for partial automation where the user is prompted from the console for all cases where it isn't sure. The user shouldn't need to edit the JSON, but they will definitely sometimes need to provide input, at least for the first time per site.
+function getUrlTail(url) {
+  const urlObj = new URL(url);
+  const pathSegments = urlObj.pathname
+    .split("/")
+    .filter((segment) => segment !== "");
+  const urlTail = pathSegments.slice(-1)[0];
+  return urlTail;
+}
+
+// NOTE TO SELF: The purpose of this function isn't 100% automation, but for partial automation where the user is prompted from the console for all cases where it isn't sure. The user ideally shouldn't need to edit the JSON, but they will definitely sometimes need to provide input, at least for the first time per domain.
+/**
+ * Asynchronously scrapes RV data from a list of URLs.
+ * @async
+ * @param {Object} options - Configuration object for the scraper.
+ * @param {string[]} options.urls - Array of URLs to scrape.
+ * @param {number} options.rvYear - The model year of the RVs to be scraped.
+ * @param {Object} options.knownDomainMappings - An object containing known mappings of domain-specific keys to standardized keys.
+ * @param {Object} options.synonymDictionary - An object containing synonyms for various RV-related terms.
+ * @param {string} [options.outputFolder="./output"] - The folder where scraped data should be saved.
+ * @throws Will throw an error if any issues occur while launching the browser, navigating to the URLs, or interacting with the pages.
+ * @returns {Promise<void>} Completes when all URLs have been scraped and the data has been saved.
+ */
 async function rvDataScraper({
   urls,
   rvYear,
-  knownSiteMappings,
+  knownDomainMappings,
   synonymDictionary,
   outputFolder = "./output",
 }) {
@@ -58,7 +79,7 @@ async function rvDataScraper({
 
     await page.waitForSelector("table");
     const extractedData = await page.evaluate(
-      (url, knownSiteMappings) => {
+      (url, knownDomainMappings) => {
         (async () => {
           const hostName = window.location.hostname
             .toLowerCase()
@@ -71,12 +92,9 @@ async function rvDataScraper({
             trimSelector,
             imageSelector,
             descriptionSelector,
-          ] = await setupAndSaveSiteSelectors(knownSiteMappings);
-          const urlTail = url
-            .split("/")
-            .filter((section) => section != "")
-            .slice(-1)[0];
-          const knownKeyMappings = knownSiteMappings[hostName].knownKeyMappings;
+          ] = await setupAndSaveSiteSelectors(knownDomainMappings);
+          const urlTail = getUrlTail(url); // not including url parameters or fragments
+          const knownKeyMappings = knownDomainMappings[hostName].knownKeyMappings;
 
           const rows = document.querySelectorAll("tbody tr");
 
@@ -176,7 +194,7 @@ async function rvDataScraper({
         })();
       },
       url,
-      knownSiteMappings,
+      knownDomainMappings,
       synonymDictionary
     );
 
@@ -229,7 +247,7 @@ async function rvDataScraper({
 
   fs.writeFileSync(
     "known-site-mappings.json",
-    JSON.stringify(knownSiteMappings, null, 2)
+    JSON.stringify(knownDomainMappings, null, 2)
   );
   await browser.close();
 }
@@ -270,11 +288,11 @@ const urls = [
   "https://www.outdoorsrvmfg.com/timber-ridge-28bks/",
 ];
 
-const knownSiteMappings = JSON.parse(
+const knownDomainMappings = JSON.parse(
   fs.readFileSync("./known-site-mappings.json", "utf-8")
 );
 rvDataScraper({
   urls,
-  knownSiteMappings,
+  knownDomainMappings,
   synonymDictionary,
 });
