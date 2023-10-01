@@ -54,18 +54,3 @@ const test3 = {
   CCC: 2080,
   "Gvwr lbskgs": "6,995",
 };
-
-console.log(test1);
-addMissingGvwrUvwCcc(test1);
-console.log(test1);
-console.log("");
-
-console.log(test2);
-addMissingGvwrUvwCcc(test2);
-console.log(test2);
-console.log("");
-
-console.log(test3);
-addMissingGvwrUvwCcc(test3);
-console.log(test3);
-console.log("");
