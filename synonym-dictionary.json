@@ -1,15 +1,17 @@
 {
-  "Dry weight lbs": ["dry weight", "UVW", "unloaded vehicle weight"],
+  "COMMENT": "the purpose of this is to get them mostly correct the first try, then a human can just give it a quick once-over to see if it's good. over time it will learn and the human will need to choose less often. IT SHOULD remove something if it got it wrong too. IT DOESN'T need to be great to start with, since it'll learn over time. it doesn't even need to be right right now, since it'll learn what's wrong too",
+
+  "Dry weight lbs": ["dry weight", "uvw", "unloaded vehicle weight"],
   "Gvwr lbskgs": [
-    "Maximum Trailer Weight",
+    "maximum trailer weight",
     "gvwr",
     "max trailer weight",
     "gross vehicle weight rating",
     "gross weight"
   ],
-  "Year": ["year", "Year of Manufacture", "Manufacturing Year"],
+  "Year": ["year", "year of manufacture", "manufacturing year"],
   "Make": ["make", "brand", "manufacturer"],
-  "Model": ["model", "model name", "model number"],
+  "Model": ["model", "model name"],
   "Trim": ["trim", "trim level", "model variant"],
   "Type": ["type", "vehicle type", "classification"],
   "Generic type primary": ["generic type", "primary type", "main type"],
@@ -51,7 +53,7 @@
   "Brakes": ["brake type", "brake system"],
   "Front brake type": ["front brake"],
   "Rear brake type": ["rear brake"],
-  "Anti lock brakes": ["ABS", "anti-lock braking system"],
+  "Anti lock brakes": ["abs", "anti-lock braking system"],
   "Length ftft": ["length feet", "total length feet"],
   "Length ftin": ["length feet inches", "total length feet inches"],
   "Length closed inclosed ftclosed mmclosed m": ["closed length"],
@@ -125,67 +127,67 @@
   "Gray water holding tank gauge": ["gray water gauge"],
   "Black water holding tank gauge": ["black water gauge"],
   "Water pump power display": [
-    "Water Pump Power",
-    "Water Pump Display",
-    "Pump Power"
+    "water pump power",
+    "water pump display",
+    "pump power"
   ],
   "Propane tank gauge": [
-    "Propane Gauge",
-    "Propane Tank Level",
-    "Gas Tank Gauge"
+    "propane gauge",
+    "propane tank level",
+    "gas tank gauge"
   ],
-  "Trailer level gauge": ["Level Gauge", "Trailer Level", "Level Indicator"],
-  "Kitchen location": ["Kitchen Area", "Kitchen Position", "Cooking Area"],
+  "Trailer level gauge": ["level gauge", "trailer level", "level indicator"],
+  "Kitchen location": ["kitchen area", "kitchen position", "cooking area"],
   "Kitchen living area flooring type": [
-    "Flooring Type",
-    "Kitchen Flooring",
-    "Living Area Flooring"
+    "flooring type",
+    "kitchen flooring",
+    "living area flooring"
   ],
   "Kitchen table configuration": [
-    "Table Configuration",
-    "Table Setup",
-    "Kitchen Table Setup"
+    "table configuration",
+    "table setup",
+    "kitchen table setup"
   ],
-  "Overhead fan": ["Ceiling Fan", "Fan", "Overhead Air Fan"],
-  "Microwave oven": ["Microwave", "Microwave Oven", "Kitchen Microwave"],
+  "Overhead fan": ["ceiling fan", "fan", "overhead air fan"],
+  "Microwave oven": ["microwave", "microwave oven", "kitchen microwave"],
   "Refrigerator size": [
-    "Fridge Size",
-    "Refrigerator Dimensions",
-    "Fridge Dimensions"
+    "fridge size",
+    "refrigerator dimensions",
+    "fridge dimensions"
   ],
   "Refrigerator power mode": [
-    "Fridge Power Mode",
-    "Refrigerator Power",
-    "Fridge Power"
+    "fridge power mode",
+    "refrigerator power",
+    "fridge power"
   ],
   "Number of oven burners": [
-    "Oven Burners",
-    "Burner Count",
-    "Number of Burners"
+    "oven burners",
+    "burner count",
+    "number of burners"
   ],
-  "Oven depth in": ["Oven Depth", "Depth of Oven", "Oven Inner Depth"],
-  "Oven size btu": ["Oven BTU", "Oven Heat Output", "BTU Rating"],
+  "Oven depth in": ["oven depth", "depth of oven", "oven inner depth"],
+  "Oven size btu": ["oven btu", "oven heat output", "btu rating"],
   "Living area location": [
-    "Living Area",
-    "Living Area Position",
-    "Living Space Location"
+    "living area",
+    "living area position",
+    "living space location"
   ],
-  "Number of sofas": ["Sofa Count", "Sofas", "Number of Couches"],
-  "Sofa material": ["Sofa Fabric", "Couch Material", "Sofa Upholstery"],
-  "Reclining sofa": ["Recliner Sofa", "Reclining Couch", "Recliner Couch"],
-  "Number of seats": ["Seat Count", "Seating Capacity", "Number of Chairs"],
-  "Seat material": ["Seat Fabric", "Chair Material", "Seat Upholstery"],
-  "Seat armrests": ["Armrests", "Chair Armrests", "Seat Arm Rest"],
-  "Reclining seats": ["Recliner Seats", "Reclining Chairs", "Recliners"],
-  "Heated seat": ["Warm Seats", "Heated Seating", "Seat Warmers"],
-  "Swivel seats": ["Swivel Chairs", "Rotating Seats", "Swivel Seating"],
-  "Recliners rockers": ["Recliner Rockers", "Rocking Recliners", "Rockers"],
+  "Number of sofas": ["sofa count", "sofas", "number of couches"],
+  "Sofa material": ["sofa fabric", "couch material", "sofa upholstery"],
+  "Reclining sofa": ["recliner sofa", "reclining couch", "recliner couch"],
+  "Number of seats": ["seat count", "seating capacity", "number of chairs"],
+  "Seat material": ["seat fabric", "chair material", "seat upholstery"],
+  "Seat armrests": ["armrests", "chair armrests", "seat arm rest"],
+  "Reclining seats": ["recliner seats", "reclining chairs", "recliners"],
+  "Heated seat": ["warm seats", "heated seating", "seat warmers"],
+  "Swivel seats": ["swivel chairs", "rotating seats", "swivel seating"],
+  "Recliners rockers": ["recliner rockers", "rocking recliners", "rockers"],
   "Max sleeping count": [
-    "Maximum Sleeping Capacity",
-    "Sleeping Capacity",
-    "Max Sleepers"
+    "maximum sleeping capacity",
+    "sleeping capacity",
+    "max sleepers"
   ],
-  "Bunkhouse": ["Bunk Area", "Bunk Room", "Sleeping Bunk"],
+  "Bunkhouse": ["bunk area", "bunk room", "sleeping bunk"],
   "Expandable bunk": ["expandable bunk"],
   "Number of bunk beds": ["number of bunk beds", "bunk beds count"],
   "Number of double beds": ["number of double beds", "double beds count"],
