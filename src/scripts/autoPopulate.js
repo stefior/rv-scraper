@@ -32,66 +32,70 @@ export default async function autoPopulate(inputFile, formPageUrl) {
   for (const dataObject of jsonData) {
     await page.goto(formPageUrl);
 
-      for (const [key, value] of Object.entries(dataObject)) {
-        if (value === null || value === undefined || value === "") break;
+    for (const [key, value] of Object.entries(dataObject)) {
+      if (value === null || value === undefined || value === "") break;
 
-        const trElements = await page.$$("tr");
+      const trElements = await page.$$("tr");
 
-        let found = false;
-        for (const trElement of trElements) {
-          const tdElements = await trElement.$$("td");
+      let found = false;
+      for (const trElement of trElements) {
+        const tdElements = await trElement.$$("td");
 
-          for (const tdElement of tdElements) {
-            const textContent = await page.evaluate(
-              (el) => el.textContent,
-              tdElement
-            );
+        for (const tdElement of tdElements) {
+          const textContent = await page.evaluate(
+            (el) => el.textContent,
+            tdElement
+          );
+          
+          if (!(textContent in Object.keys(synonymDictionary))) {
+            throw new Error("Key name in database that isn't in known options.\nEither a key was added or the name of a key was changed on that side.")
+          }
+          
+          if (textContent.includes(key)) {
+            found = true;
 
-            if (textContent.includes(key)) {
-              found = true;
+            if (key === "Floor plan") {
+              await page.waitForSelector("input[name=floor_plan][type=file]");
+              const fileInputElement = await trElement.$(
+                "input[name=floor_plan][type=file]"
+              );
+              if (fileInputElement) {
+                const filePath = path.resolve("images", value + ".png");
 
-              if (key === "Floor plan") {
-                await page.waitForSelector("input[name=floor_plan][type=file]");
-                const fileInputElement = await trElement.$(
-                  "input[name=floor_plan][type=file]"
-                );
-                if (fileInputElement) {
-                  const filePath = path.resolve("images", value + ".png");
+                if (fs.existsSync(filePath)) {
+                  await fileInputElement.focus();
+                  await fileInputElement.uploadFile(filePath);
 
-                  if (fs.existsSync(filePath)) {
-                    await fileInputElement.focus();
-                    await fileInputElement.uploadFile(filePath);
-
-                    // Manually trigger a change event
-                    await page.evaluate((inputElement) => {
-                      const changeEvent = new Event("change", {
-                        bubbles: true,
-                      });
-                      inputElement.dispatchEvent(changeEvent);
-                    }, fileInputElement);
-                  } else {
-                    console.error("File does not exist", filePath);
-                  }
-                }
-              } else {
-                const inputElementHandle = await trElement.$(
-                  'input[type="text"]'
-                );
-                if (inputElementHandle) {
-                  await inputElementHandle.type(String(value));
+                  // Manually trigger a change event
+                  await page.evaluate((inputElement) => {
+                    const changeEvent = new Event("change", {
+                      bubbles: true,
+                    });
+                    inputElement.dispatchEvent(changeEvent);
+                  }, fileInputElement);
+                } else {
+                  console.error("File does not exist", filePath);
                 }
               }
-              break;
+            } else {
+              const inputElementHandle = await trElement.$(
+                'input[type="text"]'
+              );
+              if (inputElementHandle) {
+                await inputElementHandle.type(String(value));
+              }
             }
+            break;
           }
-
-          if (found) break;
         }
 
-        if (!found) {
-          console.error(`Key "${key}" not found on the page.`);
-        }
+        if (found) break;
       }
+
+      if (!found) {
+        console.error(`Key "${key}" not found on the page.`);
+      }
+    }
 
     // Click a button to generate AI description with inputted data,
     // if there isn't one already
