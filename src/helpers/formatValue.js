@@ -1,5 +1,6 @@
 import feetInchesToInches from "./feetInchesToInches.js";
 import strNumToNum from "./strNumToNum.js";
+import { SentimentAnalyzer } from "node-nlp";
 
 // If the field names change, this part should be changed and the dictionary needs to be reset
 const standardizedValues = {
@@ -233,10 +234,15 @@ export default function formatValue(property, standardizedValues) {
     }
     case "boolean": {
       if (value) {
-        return true;
-      } else {
-        return false;
+        const sentiment = new SentimentAnalyzer({ language: "en" });
+        sentiment.getSentiment(value).then((result) => {
+          if (result.vote !== "negative") {
+            return true;
+          }
+          return false;
+        });
       }
+      return false;
     }
     case "poundfeet": {
       const pattern = /nm|newton.*meters/i;
