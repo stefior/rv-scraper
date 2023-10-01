@@ -94,7 +94,8 @@ async function rvDataScraper({
             descriptionSelector,
           ] = await setupAndSaveSiteSelectors(knownDomainMappings);
           const urlTail = getUrlTail(url); // not including url parameters or fragments
-          const knownKeyMappings = knownDomainMappings[hostName].knownKeyMappings;
+          const knownKeyMappings =
+            knownDomainMappings[hostName].knownKeyMappings;
 
           const rows = document.querySelectorAll("tbody tr");
 
@@ -115,54 +116,27 @@ async function rvDataScraper({
             }
           });
 
-          data["URL"] = url;
-          data["Year"] = rvYear;
-          data["Make"] = Make;
-
-          if (descriptionSelector) {
-            const descriptionElement =
-              document.querySelector(descriptionSelector);
-            const text = descriptionElement.textContent.trim();
-            data["Web Description"] = text ? text : null;
-          } else {
-            data["Web Description"] = null;
+          function queryAndTrim(selector) {
+            const element = document.querySelector(selector);
+            return element ? element.textContent.trim() : null;
           }
 
-          if (typeSelector) {
-            const typeElement = document.querySelector(typeSelector);
-            const text = typeElement.textContent.trim();
-            data["Type"] = text ? text : null;
-          } else {
-            data["Type"] = getRvTypeFromUrl(url);
-          }
-
-          if (modelSelector) {
-            const modelElement = document.querySelector(modelSelector);
-            const text = modelElement.textContent.trim();
-            data["Model"] = text ? text : null;
-          } else {
-            data["Model"] = null;
-          }
-
-          if (trimSelector) {
-            const trimElement = document.querySelector(trimSelector);
-            const text = trimElement.textContent.trim();
-            data["Trim"] = text ? text : null;
-          } else {
-            // Some sites don't have the trim on the page, but it's usually at the end of the url
-            data["Trim"] = urlTail;
-            data.verifyManually.push("Trim");
-          }
-
-          data["Name"] = `${data.Year} ${data.Make} ${data.Model} ${data.Trim}`;
-
-          if (imageSelector) {
-            const imageElement = document.querySelector(imageSelector);
-            data["imageURL"] = imageElement.src;
-            data["Floor plan"] = `${urlTail}`;
-          } else {
-            data["imageURL"] = null;
-          }
+          data.URL = url;
+          data.Year = rvYear;
+          data.Make = Make;
+          data["Web Description"] = descriptionSelector
+            ? queryAndTrim(descriptionSelector)
+            : null;
+          data.Type = typeSelector
+            ? queryAndTrim(typeSelector)
+            : getRvTypeFromUrl(url);
+          data.Model = modelSelector ? queryAndTrim(modelSelector) : null;
+          data.Trim = trimSelector ? queryAndTrim(trimSelector) : urlTail;
+          data.Name = `${data.Year} ${data.Make} ${data.Model} ${data.Trim}`;
+          data.imageURL = imageSelector
+            ? document.querySelector(imageSelector).src
+            : null;
+          data["Floor plan"] = urlTail;
 
           // Rename each of the keys in the extracted data to correspond with the database keys
           for (currentKey in Object.keys(data)) {
@@ -246,7 +220,7 @@ async function rvDataScraper({
   }
 
   fs.writeFileSync(
-    "known-site-mappings.json",
+    "known-domain-mappings.json",
     JSON.stringify(knownDomainMappings, null, 2)
   );
   await browser.close();
@@ -289,7 +263,7 @@ const urls = [
 ];
 
 const knownDomainMappings = JSON.parse(
-  fs.readFileSync("./known-site-mappings.json", "utf-8")
+  fs.readFileSync("./known-domain-mappings.json", "utf-8")
 );
 rvDataScraper({
   urls,
