@@ -1,11 +1,4 @@
-function checkIfValidUrl(url) {
-  try {
-    new URL(url);
-    return true;
-  } catch (err) {
-    throw new Error(`Invalid URL: ${err}`);
-  }
-}
+import isUrlValid from "./isUrlValid.js"
 
 /**
  * Extracts the RV type from a given URL based on predefined patterns.
@@ -21,7 +14,7 @@ function checkIfValidUrl(url) {
  * console.log(rvType);  // Outputs: "Travel Trailer"
  */
 export default function getRvTypeFromUrl(url) {
-  checkIfValidUrl(url);
+  isUrlValid(url);
   const lowerCaseUrl = url.toLowerCase();
 
   const rvTypePatterns = {

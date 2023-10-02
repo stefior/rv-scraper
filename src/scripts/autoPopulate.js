@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import "dotenv/config";
 
-import waitForUserInput from "../helpers/waitForUserInput.js";
+import isUrlValid from "../helpers/isUrlValid.js";
 
 async function signIn(page, loginUrl) {
   await page.goto(loginUrl);
@@ -20,46 +20,50 @@ async function signIn(page, loginUrl) {
   await logInButton.click();
 }
 
-/**
- * Automatically populates fields on a webpage with data from a JSON file using a non-headless browser.
- *
- * @param {string} inputFile - The path of the JSON file containing the data to be populated.
- * @param {string} formPageUrl - The URL of the webpage where the data is to be populated.
- *
- * @throws Will throw an error if the inputFile does not exist, if there's an issue reading the JSON data,
- *         or if there are issues interacting with the webpage or uploading files.
- *
- * @async
- * @example
- *
+async function pasteText(el, val) {
+  // It's faster to set the value of the element than having it type it in
+  await el.evaluate((element, value) => {
+    if (!element) return;
+    return (element.value = String(value));
+  }, val);
+}
 
- * // Populates fields on the webpage at the specified URL with data from input.json.
- * // It will automatically open a new tab for each object in the JSON array.
- *
- */
 export default async function autoPopulate({
   inputFile,
   loginUrl,
   formPageUrl,
   standardizedValues,
 }) {
-  console.log(`Populating database with the contents of "${inputFile} ..."`);
-  const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
+  if (!fs.existsSync(inputFile)) {
+    console.error("Input file not found");
+    return;
+  }
+  if (!isUrlValid(loginUrl)) {
+    console.error("Invalid URL format");
+    return;
+  }
+  if (typeof formPageUrl !== "string") {
+    console.error("formPageUrl must be a string");
+    return;
+  }
 
-  // Not headless so I can verify visually that each was posted without issue
+  const jsonData = JSON.parse(fs.readFileSync(inputFile, "utf8"));
+  console.log(`Populating database with the contents of "${inputFile} ..."`);
+
+  // Needs to be headful for uploading images to work with this code
   const browser = await puppeteer.launch({ headless: false });
   let page = await browser.newPage();
 
   await signIn(page, loginUrl);
   page = await browser.newPage();
 
-  let index = 0;
-  const unexpectedKeys = [];
   for (const dataObject of jsonData) {
     await page.goto(formPageUrl);
+    console.log(`Filling out form for "${dataObject.Name}"`);
 
     const trElements = await page.$$("tr");
 
+    const unexpectedKeys = [];
     for (const trElement of trElements) {
       const tdElements = await trElement.$$("td");
 
@@ -79,18 +83,7 @@ export default async function autoPopulate({
           !unexpectedKeys.includes(textContent)
         ) {
           unexpectedKeys.push(textContent);
-          console.error(
-            `\nError: Key names in database that aren't in known options.\n(Either a key was added or the name was changed.)\n Keys: ${unexpectedKeys.toString()}`
-          );
         }
-      }
-
-      async function pasteText(el, val) {
-        // It's faster to set the value of the element than having it type it in
-        await el.evaluate((element, value) => {
-          if (!element) return;
-          return (element.value = String(value));
-        }, val);
       }
 
       const value = dataObject[key];
@@ -101,18 +94,9 @@ export default async function autoPopulate({
         );
         if (fileInputElement) {
           const filePath = path.resolve("images", value + ".png");
-
           if (fs.existsSync(filePath)) {
             await fileInputElement.focus();
             await fileInputElement.uploadFile(filePath);
-
-            // Manually trigger a change event
-            await page.evaluate((inputElement) => {
-              const changeEvent = new Event("change", {
-                bubbles: true,
-              });
-              inputElement.dispatchEvent(changeEvent);
-            }, fileInputElement);
           } else {
             console.error("File does not exist: ", filePath);
           }
@@ -125,53 +109,54 @@ export default async function autoPopulate({
         await pasteText(inputElement, value);
       }
     }
+    if (unexpectedKeys.length > 0) {
+      throw new Error(
+        `\nThere are field names in the database that aren't in known options.\nEither they were renamed or added.\nKeys: ${unexpectedKeys.toString()}`
+      );
+    }
 
     // Click a button to generate AI description with inputted data, if there isn't one already
     if (!jsonData["Web Description"]) {
-      await page.waitForSelector("#generate_desc");
       const generateAiDescriptionButton = await page.$("#generate_desc");
-      if (generateAiDescriptionButton) {
-        await generateAiDescriptionButton.evaluate((button) => button.click());
-      } else {
-        throw new Error("Error triggering AI description button");
+      const aiDescriptionSelector = `textarea[name = "desc_html"]`;
+
+      try {
+        await generateAiDescriptionButton.click();
+        // Wait for AI to fill in the textbox before moving on
+        await page.waitForFunction(
+          (selector) => document.querySelector(selector).value.length > 0,
+          aiDescriptionSelector
+        );
+      } catch (err) {
+        throw new Error(`Error with AI description generation or submission`);
       }
-      // Wait for AI to fill in the textbox before moving on
-      await page.waitForFunction(
-        () =>
-          document.querySelector(`textarea[name = "desc_html"]`).value.length >
-          0
-      );
+    }
 
-      console.log(`Filled out form for ${dataObject.Name}`);
-
+    // Submit form
+    try {
       const publishButton = await page.$(
         "button[type=submit].btn.btn-primary.pull-right"
       );
       await publishButton.click();
-      // Wait for success confirmation before either moving on or aborting after 30 seconds
+    } catch (err) {
+      throw new Error("Error finding publish button");
+    }
+    console.log(`Submitted form for "${dataObject.Name}"`);
+    console.log("Pending confirmation ...   ");
+    // Wait for success confirmation before either moving on or aborting after 30 seconds
+    try {
       await page.waitForFunction(() =>
         document
           .querySelector(`div.x_title`)
           .textContent.includes("Data has been added successfully.")
       );
-
-      console.log("Submission success");
-    }
-
-    // Wait to be given the OK from stdin before moving on to the next one
-    // It only lasts 30 seconds, then the program ends automatically, so it's
-    // just to make sure it says it was published successfully at the top.
-    const shouldContinue = await waitForUserInput();
-    if (!shouldContinue) {
-      console.log(`Operation ended after ${dataObject.Name}`);
-      return;
-    }
-
-    // Open a new tab for the next object, if needed
-    if (index !== jsonData.length - 1) {
-      page = await browser.newPage();
+      console.log("-----Confirmed-----");
+    } catch (err) {
+      throw new Error("Form failed to submit");
     }
   }
+  console.log("Finished all successfully");
+  await browser.close();
 }
 
 const standardizedValues = {
@@ -375,10 +360,11 @@ const standardizedValues = {
   "Web Description": "string",
 };
 autoPopulate({
-  inputFile: "./output/grand-design.json",
-
-  formPageUrl:
-
+  // inputFile: "./output/testing.json",
   // formPageUrl: "http://localhost:5500/populate-testing.html",
+  // inputFile: "./output/outdoors-rv.json",
+
+  // formPageUrl:
+
   standardizedValues,
 });

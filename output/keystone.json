@@ -1,6 +1,5 @@
 [
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "211BHSWE",
@@ -15,23 +14,19 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 211BHSWE"
+    "Tire-Size": "ST205/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "221RBS",
     "Max sleeping count": 4,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 221RBS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "243BHSWE",
@@ -46,12 +41,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 243BHSWE"
+    "Tire-Size": "ST205/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "250BHS",
@@ -66,12 +59,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 250BHS"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "250BHSWE",
@@ -86,34 +77,28 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 250BHSWE"
+    "Tire-Size": "ST205/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "253RBSWE",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 253RBSWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "253RDS",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 253RDS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "253RDSWE",
@@ -128,34 +113,28 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 253RDSWE"
+    "Tire-Size": "ST205/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "258RKS",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 258RKS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "258RKSWE",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 258RKSWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "260RBS",
@@ -170,12 +149,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 260RBS"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "260RBSWE",
@@ -190,23 +167,19 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 260RBSWE"
+    "Tire-Size": "ST205/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "265FKS",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 265FKS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "273BHSWE",
@@ -221,12 +194,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 273BHSWE"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "287QBS",
@@ -241,12 +212,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 287QBS"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "287QBSWE",
@@ -261,23 +230,19 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 287QBSWE"
+    "Tire-Size": "ST205/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "287RLS",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 287RLS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "290BHS",
@@ -292,12 +257,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 290BHS"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "290BHSWE",
@@ -312,199 +275,163 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 290BHSWE"
+    "Tire-Size": "ST205/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "291RLS",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 291RLS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "291RLSWE",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 291RLSWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "310RES",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 310RES"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "312BHS",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 312BHS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "330BHS",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 330BHS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "330BKQ",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 330BKQ"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet",
     "Make": "Keystone",
     "Trim": "331BHS",
     "Max sleeping count": 11,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet 331BHS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "1800RB",
     "Max sleeping count": 4,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 1800RB"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "1850RB",
     "Max sleeping count": 4,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 1850RB"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "1890RB",
     "Max sleeping count": 4,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 1890RB"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "1890RBWE",
     "Max sleeping count": 4,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 1890RBWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2200BH",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2200BH"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2200BHWE",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2200BHWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2210BH",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2210BH"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2210BHWE",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2210BHWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2220ML",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2220ML"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2220MLWE",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2220MLWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2290BH",
@@ -519,34 +446,28 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2290BH"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2290BHWE",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2290BHWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2430BH",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2430BH"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2500RK",
@@ -561,56 +482,46 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2500RK"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2530RD",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2530RD"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2530RDWE",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2530RDWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2680BH",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2680BH"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2680BHWE",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2680BHWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2730BH",
@@ -625,34 +536,28 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2730BH"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2870QB",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2870QB"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Bullet Crossfire",
     "Make": "Keystone",
     "Trim": "2870QBWE",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Bullet Crossfire 2870QBWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Montana High Country",
     "Make": "Keystone",
     "Trim": "295RL",
@@ -667,12 +572,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana High Country 295RL"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana High Country",
     "Make": "Keystone",
     "Trim": "311RD",
@@ -687,12 +590,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana High Country 311RD"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana High Country",
     "Make": "Keystone",
     "Trim": "331RL",
@@ -707,23 +608,19 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana High Country 331RL"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana High Country",
     "Make": "Keystone",
     "Trim": "335BH",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 18,
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana High Country 335BH"
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana High Country",
     "Make": "Keystone",
     "Trim": "351BH",
@@ -738,12 +635,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana High Country 351BH"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana High Country",
     "Make": "Keystone",
     "Trim": "373RD",
@@ -758,12 +653,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana High Country 373RD"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana High Country",
     "Make": "Keystone",
     "Trim": "377FL",
@@ -778,12 +671,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana High Country 377FL"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana High Country",
     "Make": "Keystone",
     "Trim": "381TB",
@@ -798,12 +689,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana High Country 381TB"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana High Country",
     "Make": "Keystone",
     "Trim": "385BR",
@@ -818,23 +707,19 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana High Country 385BR"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana High Country",
     "Make": "Keystone",
     "Trim": "389BH",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 18,
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana High Country 389BH"
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3123RL",
@@ -849,12 +734,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3123RL"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3231CK",
@@ -869,12 +752,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3231CK"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3531RE",
@@ -887,12 +768,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3531RE"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3761FL",
@@ -907,12 +786,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3761FL"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3781RL",
@@ -927,12 +804,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3781RL"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3793RD",
@@ -947,23 +822,19 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3793RD"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3795FK",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 18,
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3795FK"
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3857BR",
@@ -978,12 +849,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3857BR"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3901RK",
@@ -998,23 +867,19 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3901RK"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3915TB",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 18,
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3915TB"
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Montana",
     "Make": "Keystone",
     "Trim": "3941FO",
@@ -1029,45 +894,37 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 18,
-    "Tire Code": "ST235/80R16G",
-    "Type": "Fifth Wheel",
-    "Name": "2024 Keystone Montana 3941FO"
+    "Tire-Size": "ST235/80R16G",
+    "Type": "Fifth Wheel"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "174RK",
     "Max sleeping count": 4,
     "Number of propane tanks": 1,
     "Refrigerator size": 7.7,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 174RK"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "200RLWE",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 200RLWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "20RDN",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 20RDN"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "20RDNWE",
@@ -1082,23 +939,19 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 20RDNWE"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "21BHNWE",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 8,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 21BHNWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "22MLS",
@@ -1113,12 +966,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 22MLS"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "22MLSWE",
@@ -1133,34 +984,28 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 22MLSWE"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "240BHWE",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 240BHWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "24BHSWE",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 24BHSWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "24RBS",
@@ -1175,12 +1020,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 24RBS"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "24RBSWE",
@@ -1195,34 +1038,28 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 24RBSWE"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "24RKSWE",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 24RKSWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "25BHN",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 25BHN"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "25BHNWE",
@@ -1237,12 +1074,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 25BHNWE"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "25BHS",
@@ -1257,12 +1092,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 25BHS"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "25BHSWE",
@@ -1277,12 +1110,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 25BHSWE"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "25RDS",
@@ -1297,12 +1128,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14C",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 25RDS"
+    "Tire-Size": "ST205/75R14C",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "25RDSWE",
@@ -1317,34 +1146,28 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 25RDSWE"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "261BHWE",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 261BHWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "269DBWE",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 269DBWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "26BHS",
@@ -1359,12 +1182,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 26BHS"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "26BHSWE",
@@ -1379,67 +1200,55 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 8,
-    "Tire Code": "ST205/75R14D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 26BHSWE"
+    "Tire-Size": "ST205/75R14D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "26FKS",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 26FKS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "26FKSWE",
     "Max sleeping count": 8,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 26FKSWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "28BUS",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 28BUS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "28BUSWE",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 28BUSWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "28RKD",
     "Max sleeping count": 6,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 28RKD"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "28RKSWE",
@@ -1454,34 +1263,28 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 10,
-    "Tire Code": "ST225/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 28RKSWE"
+    "Tire-Size": "ST225/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "291BRWE",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 291BRWE"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "29DFS",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 29DFS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "29DFSWE",
@@ -1496,23 +1299,19 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 8,
-    "Tire Code": "ST225/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 29DFSWE"
+    "Tire-Size": "ST225/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "29QBS",
     "Max sleeping count": 10,
     "Number of propane tanks": 2,
     "Refrigerator size": 10,
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 29QBS"
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "29QBSWE",
@@ -1527,12 +1326,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 8,
-    "Tire Code": "ST225/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 29QBSWE"
+    "Tire-Size": "ST225/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "30BHKSWE",
@@ -1547,12 +1344,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 60,
     "Refrigerator size": 8,
-    "Tire Code": "ST225/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 30BHKSWE"
+    "Tire-Size": "ST225/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "31BRD",
@@ -1567,12 +1362,10 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST225/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 31BRD"
+    "Tire-Size": "ST225/75R15D",
+    "Type": "Travel Trailer"
   },
   {
-    "Year": 2024,
     "Model": "Hideout",
     "Make": "Keystone",
     "Trim": "31DBS",
@@ -1585,8 +1378,7 @@
     "Number of propane tanks": 2,
     "Total propane tank capacity gallbs": 40,
     "Refrigerator size": 10,
-    "Tire Code": "ST225/75R15D",
-    "Type": "Travel Trailer",
-    "Name": "2024 Keystone Hideout 31DBS"
+    "Tire-Size": "ST225/75R15D",
+    "Type": "Travel Trailer"
   }
 ]
