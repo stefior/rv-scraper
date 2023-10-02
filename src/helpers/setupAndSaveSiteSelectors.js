@@ -92,6 +92,7 @@ export default async function setupAndSaveSiteSelectors(
       trimSelector: await promptUser("trimSelector"),
       imageSelector: await promptUser("imageSelector"),
       descriptionSelector: await promptUser("descriptionSelector"),
+      webFeaturesSelector: await promptUser("webFeaturesSelector"),
       knownKeyMappings: {},
     };
 
@@ -106,5 +107,6 @@ export default async function setupAndSaveSiteSelectors(
     siteMapping.trimSelector,
     siteMapping.imageSelector,
     siteMapping.descriptionSelector,
+    siteMapping.webFeaturesSelector,
   ];
 }

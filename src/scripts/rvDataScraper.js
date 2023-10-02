@@ -92,6 +92,7 @@ async function rvDataScraper({
             trimSelector,
             imageSelector,
             descriptionSelector,
+            webFeaturesSelector,
           ] = await setupAndSaveSiteSelectors(knownDomainMappings);
           const urlTail = getUrlTail(url); // not including url parameters or fragments
           const knownKeyMappings =
@@ -124,14 +125,18 @@ async function rvDataScraper({
           data.URL = url;
           data.Year = rvYear;
           data.Make = Make;
-          data["Web Description"] = descriptionSelector
-            ? queryAndTrim(descriptionSelector)
-            : null;
+          data["Web Features"] = queryAndTrim(webFeaturesSelector);
+          data["Web Description"] = queryAndTrim(descriptionSelector);
           data.Type = typeSelector
             ? queryAndTrim(typeSelector)
             : getRvTypeFromUrl(url);
-          data.Model = modelSelector ? queryAndTrim(modelSelector) : null;
-          data.Trim = trimSelector ? queryAndTrim(trimSelector) : urlTail;
+          data.Model = queryAndTrim(modelSelector);
+          if (trimSelector) {
+            data.Trim = queryAndTrim(trimSelector);
+          } else {
+            data.Trim = urlTail;
+            data.verifyManually.push("Trim");
+          }
           data.Name = `${data.Year} ${data.Make} ${data.Model} ${data.Trim}`;
           data.imageURL = imageSelector
             ? document.querySelector(imageSelector).src
@@ -140,7 +145,9 @@ async function rvDataScraper({
 
           // Rename each of the keys in the extracted data to correspond with the database keys
           for (currentKey in Object.keys(data)) {
-            data[currentKey] = formatValue(data[currentKey]);
+            //////////////////////////////////////////////////////////////////////////////////
+            // data[currentKey] = formatValue(data[currentKey]); ///////// NEEDS TESTING /////
+            //////////////////////////////////////////////////////////////////////////////////
             if (currentKey in knownKeyMappings) {
               // Change the key name in the extracted data to the one for the database
               const newKeyName = knownKeyMappings[currentKey];
@@ -188,8 +195,8 @@ async function rvDataScraper({
 
     addMissingGvwrUvwCcc(extractedData);
 
-    if ("Tires" in extractedData) {
-      const tireData = parseTireCode(extractedData["Tires"]);
+    if ("Tire Code" in extractedData) {
+      const tireData = parseTireCode(extractedData["Tire Code"]);
       extractedData["Rear tire diameter in"] = tireData.tireDiameterIn;
       // Wheel width and wheel diameter are different, but diameter is likely what was meant
       extractedData["Rear wheel width in"] = tireData.wheelDiameterIn;
@@ -267,6 +274,7 @@ const knownDomainMappings = JSON.parse(
 );
 rvDataScraper({
   urls,
+  rvYear,
   knownDomainMappings,
   synonymDictionary,
 });
