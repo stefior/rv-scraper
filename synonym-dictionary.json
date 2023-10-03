@@ -286,5 +286,6 @@
   "Exterior cargo deck length inmm": ["cargo deck length", "deck length"],
   "Exterior cargo deck width inmm": ["cargo deck width", "deck width"],
   "Web Features": ["features"],
-  "Web Description": ["description"]
+  "Web Description": ["description"],
+  "imageUrl": []
 }

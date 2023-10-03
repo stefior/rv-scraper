@@ -27,7 +27,7 @@ function isValidCssSelector(selector) {
  * @example
  * const userValue = await promptUser('someVariable');
  */
-function promptForSelector(variableName) {
+function promptForValue(variableName) {
   return new Promise((resolve, reject) => {
     try {
       const rl = readline.createInterface({
@@ -37,7 +37,7 @@ function promptForSelector(variableName) {
 
       function ask() {
         rl.question(
-          `Please enter a selector for ${variableName}, or else null: `,
+          `\nPlease enter a selector for ${variableName}, or else null:\n    `,
           (selector) => {
             selector = selector.trim();
 
@@ -45,10 +45,10 @@ function promptForSelector(variableName) {
               rl.close();
               resolve(null);
             } else if (!isValidCssSelector(selector)) {
-              console.log("Invalid selector. Please try again.");
+              console.log("\nINVALID SELECTOR. Please try again.");
               ask();
             } else if (selector === "") {
-              console.log("Input cannot be empty. Please try again.");
+              console.log("\nInput cannot be empty. Please try again.");
               ask();
             } else {
               rl.close();
@@ -66,13 +66,27 @@ function promptForSelector(variableName) {
 }
 
 /**
+ * @typedef {Object} SiteMappings
+ * @property {string} Make - The make of the RV.
+ * @property {string} typeSelector - CSS Selector for the type field.
+ * @property {string} modelSelector - CSS Selector for the model field.
+ * @property {string} trimSelector - CSS Selector for the trim field.
+ * @property {string} imageSelector - CSS Selector for the image field.
+ * @property {string} descriptionSelector - CSS Selector for the description field.
+ * @property {string} rowSelector - CSS Selector for rows or row-like elements in a table of data.
+ * @property {string} dlSelector - CSS Selector for a dl element to extract the data from.
+ * @property {string} webFeaturesSelector - CSS Selector for the web features field.
+ * @property {Object} knownKeyMappings - An object mapping site-specific keys to standardized keys.
+ */
+
+/**
  * Sets up and saves site selectors for a specified domain.
  * If the domain is known, the function retrieves the existing site selectors from the knownDomainMappings object.
  * If the domain is new, the function prompts the user to provide the necessary selectors and saves them to the knownDomainMappings object.
  *
  * @param {Object} knownDomainMappings - An object containing mappings of host names to site selectors.
  * @param {string} secondLevelDomain - The second level domain name for the site in which to set up or retrieve site selectors.
- * @returns {Promise<Object>} A promise that resolves to an object containing the site selectors for the specified domain.
+ * @returns {Promise<SiteMappings>} A promise that resolves to an object containing the site selectors for the specified domain.
  * @throws Will throw an error if there is a problem during the user prompting process.
  *
  * @example
@@ -88,18 +102,20 @@ export default async function setupAndSaveSiteSelectors(
     siteMappings = knownDomainMappings[secondLevelDomain];
   } else {
     console.log(
-      `\nEnter site selectors for new domain: "${secondLevelDomain}"`
+      `\nEnter variable values for new domain: "${secondLevelDomain}"`
     );
 
     // Initialize a new object for this host
     siteMappings = {
-      Make: await promptForSelector("Make"),
-      typeSelector: await promptForSelector("typeSelector"),
-      modelSelector: await promptForSelector("modelSelector"),
-      trimSelector: await promptForSelector("trimSelector"),
-      imageSelector: await promptForSelector("imageSelector"),
-      descriptionSelector: await promptForSelector("descriptionSelector"),
-      webFeaturesSelector: await promptForSelector("webFeaturesSelector"),
+      Make: await promptForValue("Make"),
+      typeSelector: await promptForValue("typeSelector"),
+      modelSelector: await promptForValue("modelSelector"),
+      trimSelector: await promptForValue("trimSelector"),
+      imageSelector: await promptForValue("imageSelector"),
+      descriptionSelector: await promptForValue("descriptionSelector"),
+      rowSelector: await promptForValue("rowSelector"),
+      dlSelector: await promptForValue("dlSelector"),
+      webFeaturesSelector: await promptForValue("webFeaturesSelector"),
       knownKeyMappings: {},
     };
 

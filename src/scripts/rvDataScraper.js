@@ -71,12 +71,86 @@ function getSecondLevelDomain(url) {
 }
 
 /**
+ * Extracts data from a webpage based on specified site mappings using Puppeteer's page object.
+ * The function navigates through the table rows in the webpage and extracts text content from specified elements,
+ * as well as extracts additional information based on the provided site mappings.
+ *
+ * @async
+ * @param {Object} page - The Puppeteer page object representing the webpage.
+ * @param {Object} siteMappings - An object containing mappings to specific elements on the webpage, or else null.
+ * @returns {Promise<Object>} - A promise that resolves to an object containing the extracted data.
+ * The object contains keys based on the text content of the first cell in each row of the table,
+ * as well as additional keys based on the site mappings provided.
+ */
+async function extractData(page, siteMappings) {
+  return page.evaluate((sM) => {
+    data = {};
+
+    if (sM.rowSelector) {
+      const rows = document.querySelectorAll(sM.rowSelector);
+
+      rows.forEach((row) => {
+        const cells = row.children;
+
+        // Ensure there are at least two cells in the row before proceeding
+        if (cells.length >= 2) {
+          const key = cells[0].textContent.trim();
+          const value = cells[1].textContent.trim();
+
+          data[key] = value; // Grab it all now, then just use what's useful later
+        }
+      });
+    }
+    if (sM.dlSelector) {
+      const descriptionList = document.querySelector("dl");
+      const descriptionTerms = descriptionList.querySelectorAll("dt");
+      const descriptionDetails = descriptionList.querySelectorAll("dd");
+
+      for (let i = 0; i < descriptionTerms.length; i++) {
+        const key = descriptionTerms[i].textContent.trim();
+        const value =
+          i < descriptionDetails.length
+            ? descriptionDetails[i].textContent.trim()
+            : null;
+
+        data[key] = value;
+      }
+    }
+
+    function queryAndTrim(selector) {
+      const element = document.querySelector(selector);
+      return element ? element.textContent.trim() : null;
+    }
+
+    data["Web Features"] = queryAndTrim(sM.webFeaturesSelector);
+    data["Web Description"] = queryAndTrim(sM.descriptionSelector);
+    data.Make = sM.Make;
+    data.Type = queryAndTrim(sM.typeSelector);
+    data.Model = queryAndTrim(sM.modelSelector);
+    data.Trim = queryAndTrim(sM.trimSelector);
+
+    const imageUrl = document.querySelector(sM.imageSelector)?.src;
+    if (
+      imageUrl &&
+      typeof imageUrl === "string" &&
+      !imageUrl.startsWith("data:")
+    ) {
+      data.imageUrl = imageUrl;
+    } else {
+      data.imageUrl = null;
+    }
+
+    return data;
+  }, siteMappings);
+}
+
+/**
  * Prompts the user to provide a standard key name for an unrecognized key,
  * using a recursive approach to re-prompt the user until a valid standard key name is provided.
  *
  * @param {string} unrecognizedKey - The unrecognized key for which a standard key name is needed.
  * @param {Object} synonymDictionary - An object where each key is a term used in the data source, and the corresponding value is the standardized term used in the database.
- * @returns {Promise<string>} - A promise that resolves to the standard key name provided by the user.
+ * @returns {Promise<string|null>} - A promise that resolves to the standard key name provided by the user or null if there is no mapping.
  */
 function promptForKeyMapping(unrecognizedKey, synonymDictionary) {
   return new Promise((resolve, reject) => {
@@ -91,7 +165,14 @@ function promptForKeyMapping(unrecognizedKey, synonymDictionary) {
         (userInput) => {
           const standardKeyName = userInput.trim();
 
-          if (Object.keys(synonymDictionary).includes(standardKeyName)) {
+          if (standardKeyName === 'null') {
+            console.log(
+              `Mapping confirmed ('${unrecognizedKey}' -> null)`
+            );
+            rl.close();
+            resolve(null);
+          }
+          else if (Object.keys(synonymDictionary).includes(standardKeyName)) {
             console.log(
               `Mapping confirmed ('${unrecognizedKey}' -> '${standardKeyName}')`
             );
@@ -107,73 +188,6 @@ function promptForKeyMapping(unrecognizedKey, synonymDictionary) {
 
     ask();
   });
-}
-
-/**
- * Extracts data from a webpage based on specified site mappings using Puppeteer's page object.
- * The function navigates through the table rows in the webpage and extracts text content from specified elements,
- * as well as extracts additional information based on the provided site mappings.
- *
- * @async
- * @param {Object} page - The Puppeteer page object representing the webpage.
- * @param {Array} siteMappings - An array containing mappings to specific elements on the webpage.
- * The array should contain the following elements in order:
- *   - Make: A string representing the Make of the RV.
- *   - typeSelector: A string containing the CSS selector for the Type element.
- *   - modelSelector: A string containing the CSS selector for the Model element.
- *   - trimSelector: A string containing the CSS selector for the Trim element.
- *   - imageSelector: A string containing the CSS selector for the image element.
- *   - descriptionSelector: A string containing the CSS selector for the Description element.
- *   - webFeaturesSelector: A string containing the CSS selector for the Web Features element.
- * @returns {Promise<Object>} - A promise that resolves to an object containing the extracted data.
- * The object contains keys based on the text content of the first cell in each row of the table,
- * as well as additional keys: Web Features, Web Description, Make, Type, Model, Trim, and imageUrl
- * based on the site mappings provided.
- */
-async function extractData(page, siteMappings) {
-  return page.evaluate((siteMappings) => {
-    const {
-      Make,
-      typeSelector,
-      modelSelector,
-      trimSelector,
-      imageSelector,
-      descriptionSelector,
-      webFeaturesSelector,
-    } = siteMappings;
-    const rows = document.querySelectorAll("tbody tr");
-
-    const data = {};
-
-    rows.forEach((row) => {
-      const keyCell = row.querySelector("td:nth-child(1)");
-      const valueCell = row.querySelector("td:nth-child(2)");
-
-      if (keyCell && valueCell) {
-        const key = keyCell.textContent.trim();
-        const value = valueCell.textContent.trim();
-
-        data[key] = value; // Grab it all now, then just use what's useful later
-      }
-    });
-
-    function queryAndTrim(selector) {
-      const element = document.querySelector(selector);
-      return element ? element.textContent.trim() : null;
-    }
-
-    data["Web Features"] = queryAndTrim(webFeaturesSelector);
-    data["Web Description"] = queryAndTrim(descriptionSelector);
-    data.Make = Make;
-    data.Type = queryAndTrim(typeSelector);
-    data.Model = queryAndTrim(modelSelector);
-    data.Trim = queryAndTrim(trimSelector);
-    data.imageUrl = imageSelector
-      ? document.querySelector(imageSelector).src
-      : null;
-
-    return data;
-  }, siteMappings);
 }
 
 /**
@@ -193,19 +207,25 @@ async function extractData(page, siteMappings) {
  * const renamedData = renameData(extractedData);
  * console.log(renamedData); // Output: { "Make": "Ford" }
  */
-function renameData(extractedData, synonymDictionary, secondLevelDomain) {
+async function renameKeys(extractedData, synonymDictionary, secondLevelDomain) {
   const knownKeyMappings =
     knownDomainMappings[secondLevelDomain].knownKeyMappings;
   const renamedData = {};
 
   for (const currentKey of Object.keys(extractedData)) {
-    if (currentKey in knownKeyMappings) {
+    if (currentKey in synonymDictionary) {
+      // It's already the correct name in this case
+      renamedData[currentKey] = extractedData[currentKey];
+    } else if (currentKey in knownKeyMappings) {
       // Change the key name in the extracted data to the one for the database
       const newKeyName = knownKeyMappings[currentKey];
       renamedData[newKeyName] = extractedData[currentKey];
     } else {
       // Ask user what *standardized key* the key from the site is referring to
-      const newKeyName = promptForKeyMapping(currentKey, synonymDictionary);
+      const newKeyName = await promptForKeyMapping(
+        currentKey,
+        synonymDictionary
+      );
       // Map the key name from the site to the one for the database
       knownKeyMappings[currentKey] = newKeyName;
       // Change the key name in the extracted data to the one for the database
@@ -234,38 +254,38 @@ function renameData(extractedData, synonymDictionary, secondLevelDomain) {
  * transformData(extractedData, rvYear, lastUrlSegment, url);
  * // extractedData is now modified with additional fields like Year, url, "Floor plan", etc.
  */
-function transformData(extractedData, rvYear, lastUrlSegment, url) {
-  extractedData.verifyManually = []; // For indicating fields to double-check
-  extractedData.url = url;
-  extractedData.Year = rvYear;
-  extractedData["Floor plan"] = lastUrlSegment;
-  if (!extractedData.Type) extractedData.Type = getRvTypeFromUrl(url);
-  if (!extractedData.Trim) {
-    extractedData.Trim = lastUrlSegment;
-    extractedData.verifyManually.push("Trim");
-  }
-  extractedData.Name = `${extractedData.Year} ${extractedData.Make} ${extractedData.Model} ${extractedData.Trim}`;
+function transformData(renamedData, rvYear, lastUrlSegment, url) {
+  //
+  // TODO: add for all data[currentKey] = formatValue(data[currentKey]); //// NEEDS TESTING ////
+  //
+  const transformedData = JSON.parse(JSON.stringify(renamedData));
 
-  if ("Awning length ftm" in extractedData) {
-    extractedData["Awning length ftm"] = splitAwningMeasurements(
-      extractedData["Awning length ftm"]
+  transformedData.url = url;
+  transformedData.Year = rvYear;
+  transformedData["Floor plan"] = lastUrlSegment;
+  if (!transformedData.Type) transformedData.Type = getRvTypeFromUrl(url);
+  if (!transformedData.Trim) {
+    transformedData.Trim = lastUrlSegment;
+    transformedData.verifyManually.push("Trim");
+  }
+  transformedData.Name = `${transformedData.Year} ${transformedData.Make} ${transformedData.Model} ${transformedData.Trim}`;
+
+  if ("Awning length ftm" in transformedData) {
+    transformedData["Awning length ftm"] = splitAwningMeasurements(
+      transformedData["Awning length ftm"]
     );
   }
 
-  addMissingGvwrUvwCcc(extractedData);
+  addMissingGvwrUvwCcc(transformedData);
 
-  if ("Tire Code" in extractedData) {
-    const tireData = parseTireCode(extractedData["Tire Code"]);
-    extractedData["Rear tire diameter in"] = tireData.tireDiameterIn;
+  if ("Tire Code" in transformedData) {
+    const tireData = parseTireCode(transformedData["Tire Code"]);
+    transformedData["Rear tire diameter in"] = tireData.tireDiameterIn;
     // Wheel width and wheel diameter are different, but diameter is likely what was meant
-    extractedData["Rear wheel width in"] = tireData.wheelDiameterIn;
+    transformedData["Rear wheel width in"] = tireData.wheelDiameterIn;
   }
 
-  Object.keys(extractedData).forEach((key) => {
-    if (extractedData[key] === null || extractedData[key] === undefined) {
-      extractedData.verifyManually.push(`${key}`);
-    }
-  });
+  return transformedData;
 }
 
 /**
@@ -283,13 +303,13 @@ function transformData(extractedData, rvYear, lastUrlSegment, url) {
  * await handleImageDownload(outputFolder, extractedData);
  * // The image is now downloaded, converted to PNG, and saved in the specified folder.
  */
-async function handleImageDownload(outputFolder, extractedData) {
+async function handleImageDownload(outputFolder, transformedData) {
   await downloadAndConvertToPng(
-    extractedData.imageUrl,
-    extractedData["Floor plan"],
+    transformedData.imageUrl,
+    transformedData["Floor plan"],
     outputFolder
   ).catch((err) => {
-    throw new Error(`Error downloading image: ${err}`);
+    console.error(`Error downloading image: ${err}`);
   });
 }
 
@@ -410,19 +430,25 @@ export default async function rvDataScraper({
     return;
   const browser = await puppeteer.launch({ headless: "new" });
   const page = await browser.newPage();
+  await page.setViewport({ width: 1920, height: 1080 });
 
   let urlIndex = 0;
   const failedNavigations = [];
   const imagesOutputFolder = path.join(outputFolder, "images");
+
   for (const url of urls) {
     try {
-      await page.goto(url);
+      // Waiting for load event is so the scraper doesn't scrape temporary placeholder images
+      await page.goto(url, { waitUntil: "load" });
+      // Set viewport is so that mobile styles aren't applied due to puppeteer using a 783 px window by default
     } catch (err) {
-      console.error(`Failed to navigate to ${url}: ${err}`);
       failedNavigations.push(url);
-      continue; // Continue with the next URL if navigation fails
+      continue; // Continue with the next URL if navigation fails, listing all failures at the end
     }
     await page.waitForSelector("table");
+    await page.waitForSelector(
+      "div.floorplan-hero-image > div > img.img-loaded"
+    ); /////////////////////////////////////////////////////////////////////
     const secondLevelDomain = getSecondLevelDomain(url);
     const siteMappings = await setupAndSaveSiteSelectors(
       knownDomainMappings,
@@ -432,7 +458,7 @@ export default async function rvDataScraper({
     const extractedData = await extractData(page, siteMappings);
 
     // Rename each of the keys in the extracted data to correspond with the database keys
-    const renamedData = renameData(
+    const renamedData = await renameKeys(
       extractedData,
       synonymDictionary,
       secondLevelDomain
@@ -453,7 +479,10 @@ export default async function rvDataScraper({
     urlIndex++;
   }
   if (failedNavigations.length > 0) {
-    console.log("All failed navigations:", failedNavigations);
+    console.log(
+      "\nScraper failed to navigate to these URLs:\n",
+      failedNavigations
+    );
   }
 
   saveDomainMappings(knownDomainMappings);

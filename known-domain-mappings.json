@@ -1,13 +1,4 @@
 {
-  "testdomain": {
-    "Make": "div.make",
-    "typeSelector": "div.type",
-    "modelSelector": "div.model",
-    "trimSelector": "div.trim",
-    "imageSelector": "img.main",
-    "descriptionSelector": null,
-    "knownKeyMappings": {}
-  },
   "outdoorsrvmfg": {
     "Make": "Outdoors RV",
     "typeSelector": null,
@@ -15,6 +6,9 @@
     "trimSelector": "body > div.wrapper > div > div > div > div > div > section > div:nth-child(9) > div > div.wpb_column.vc_column_container.vc_col-sm-6 > div > div > div:nth-child(1) > div > h1",
     "imageSelector": "body > div.wrapper > div > div > div > div > div > section > div:nth-child(4) > div > div:nth-child(2) > div > div > div.wpb_single_image.wpb_content_element.vc_align_center > div > a > div > img",
     "descriptionSelector": null,
+    "webFeaturesSelector": "body > div.wrapper > div > div > div > div > div > section > div:nth-child(6) > div > div:nth-child(2) > div > div > div:nth-child(2) > div > div > div > div > div:nth-child(3) > div",
+    "rowSelector": "table tr",
+    "dlSelector": null,
     "knownKeyMappings": {
       "Exterior Height": "Height closed ftin",
       "Exterior Length (approx. hitch to back of bumper)": "Length ftin",
@@ -31,5 +25,17 @@
       "Heavy Duty 5 Lug Axles (lbs)": "Number of axles",
       "Good Year Tire Size": "Tire Code"
     }
+  },
+  "keystonerv": {
+    "Make": "Keystone",
+    "typeSelector": "#app > main > div > div:nth-child(4) > section.floorplan-detail-wrapper > div:nth-child(1) > section:nth-child(5) > div > div > div.specifications-wrapper.specs > table > tr:nth-child(3) > td",
+    "modelSelector": "#app > main > div > div.banner-container > div.type-banner-wrapper > div > div > div.info > div > h1",
+    "trimSelector": "#app > main > div > div:nth-child(4) > section.floorplan-detail-wrapper > div:nth-child(1) > div.container > div > div.left-col > div.normalH1 > h1",
+    "imageSelector": "div.floorplan-hero-image > div > img.img-loaded",
+    "descriptionSelector": "null",
+    "webFeaturesSelector": "#exterior > div",
+    "rowSelector": "table tr",
+    "dlSelector": null,
+    "knownKeyMappings": {}
   }
 }
