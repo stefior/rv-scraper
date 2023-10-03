@@ -1,8 +1,17 @@
 import puppeteer from "puppeteer";
 import Bottleneck from "bottleneck";
 
-const limiter = new Bottleneck({ maxConcurrent: 36 });
+const MAX_CONCURRENT = 36; // Config
+const limiter = new Bottleneck({ maxConcurrent: MAX_CONCURRENT });
 
+/**
+ * Extracts links from a given URL based on a specified selector.
+ *
+ * @param {string} url - The URL to extract links from.
+ * @param {string} selector - The selector to use for extracting links.
+ * @param {puppeteer.Browser} browser - The puppeteer browser instance.
+ * @returns {Promise<string[]>} - A promise that resolves to an array of extracted links.
+ */
 async function extractLinks(url, selector, browser) {
   try {
     const page = await browser.newPage();
@@ -52,7 +61,7 @@ export default async function extractAllSelectorLinks(urlsObject) {
   }
 
   const browser = await puppeteer.launch({ headless: "new" });
-  process.stdout.write("Extracting URLs...");
+  process.stdout.write("Extracting URLs...\n");
 
   const tasks = [];
 
@@ -61,7 +70,7 @@ export default async function extractAllSelectorLinks(urlsObject) {
 
     for (const url of allLinksForGroup) {
       const task = limiter.schedule(() => {
-        console.log("task running");
+        console.log(`Extracting links from ${url} using selector ${selector}`);
         return extractLinks(url, selector, browser);
       });
       tasks.push(task);
@@ -79,3 +88,14 @@ export default async function extractAllSelectorLinks(urlsObject) {
 // Can use Copy All URLs (free) chrome extension for getting the main pages that
 // you want the links from, then use multi cursor in VS code to easily turn it into an array
 // e.g. Ctrl + Alt + Up/Down, then home/end to add the quotes and commas
+
+// let output = await extractAllSelectorLinks({
+//   "div.floorplan-result-wrapper > ul > li > a": [
+//     "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans",
+//     "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans",
+//     "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans",
+//     "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans",
+//     "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans",
+//   ],
+// });
+// console.log(output)

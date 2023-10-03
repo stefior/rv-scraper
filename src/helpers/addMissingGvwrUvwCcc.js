@@ -41,16 +41,3 @@ export default function addMissingGvwrUvwCcc(record) {
     record["CCC"] = record["Gvwr lbskgs"] - record["Dry weight lbs"];
   }
 }
-
-const test1 = {
-  "Dry weight lbs": "4,915",
-  "Gvwr lbskgs": "6,995",
-};
-const test2 = {
- 'testing': '2',
- 'test': 1
-};
-const test3 = {
-  CCC: 2080,
-  "Gvwr lbskgs": "6,995",
-};

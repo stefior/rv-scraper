@@ -1,5 +1,17 @@
 import readline from "readline";
 
+/**
+ * Prompts the user to input a value for a specified variable via the console.
+ * If the user inputs 'null', the function resolves to null.
+ * If the user inputs an empty string, they will be re-prompted until a non-empty value or 'null' is entered.
+ *
+ * @param {string} variableName - The name of the variable the user is being prompted to provide a value for.
+ * @returns {Promise<string|null>} A promise that resolves to the user's input or null.
+ * @throws Will throw an error if there's an issue during prompting.
+ *
+ * @example
+ * const userValue = await promptUser('someVariable');
+ */
 function promptUser(variableName) {
   return new Promise((resolve, reject) => {
     try {
@@ -12,10 +24,12 @@ function promptUser(variableName) {
         rl.question(
           `Please enter a value for ${variableName}, or else null: `,
           (answer) => {
-            if (answer.trim().includes("null")) {
+            answer = answer.trim()
+            
+            if (answer.includes("null")) {
               rl.close();
               resolve(null);
-            } else if (answer.trim() === "") {
+            } else if (answer === "") {
               console.log("Input cannot be empty. Please try again.");
               ask();
             } else {
@@ -34,55 +48,25 @@ function promptUser(variableName) {
 }
 
 /**
- * Fetches or prompts the user to provide domain-specific selector
- * values for a given domain, which are used to scrape data from that domain.
+ * Sets up and saves site selectors for a specified domain. 
+ * If the domain is known, the function retrieves the existing site selectors from the knownDomainMappings object.
+ * If the domain is new, the function prompts the user to provide the necessary selectors and saves them to the knownDomainMappings object.
  *
- * It first checks if the domain is already known by looking up the hostname in the provided
- * knownDomainMappings object. If found, it returns the known selectors for that domain.
- * If not found, it prompts the user to provide these selectors, saves them to knownDomainMappings,
- * and then returns them.
- *
- * @param {object} knownDomainMappings - An object where keys are hostnames and values are objects
- * containing domain-specific selector strings.
- * @param {Window} window - A reference to the browser window object.
- *
- * @returns {Promise<Array<string|null>>} - A promise that resolves to an array of
- * domain-specific selector strings or null values for the current domain.
+ * @param {Object} knownDomainMappings - An object containing mappings of host names to site selectors.
+ * @param {string} hostName - The host name of the domain for which to set up or retrieve site selectors.
+ * @returns {Promise<Object>} A promise that resolves to an object containing the site selectors for the specified domain.
+ * @throws Will throw an error if there is a problem during the user prompting process.
  *
  * @example
- *
- * const knownMappings = {
- *   'example.com': {
- *     Make: 'div.make',
- *     typeSelector: 'div.type',
- *     modelSelector: 'div.model',
- *     trimSelector: 'div.trim',
- *     imageSelector: 'img.main',
- *     descriptionSelector: 'div.description'
- *     knownDomainMappings: {}
- *   }
- * };
- *
- * setupAndSaveSiteSelectors(knownMappings, window)
- *   .then(selectors => {
- *     console.log(selectors);
- *   });
+ * const siteSelectors = await setupAndSaveSiteSelectors(knownMappings, 'example.com');
  */
-export default async function setupAndSaveSiteSelectors(
-  knownDomainMappings,
-  window
-) {
-  const hostName = window.location.hostname
-    .toLowerCase()
-    .split(".")
-    .reverse()[1];
-
+export default async function setupAndSaveSiteSelectors(knownDomainMappings, hostName) {
   let siteMapping;
 
   if (hostName in knownDomainMappings) {
     siteMapping = knownDomainMappings[hostName];
   } else {
-    console.log(`Enter site selectors for new domain (${window.origin})`);
+    console.log(`\nEnter site selectors for new domain: "${hostName}"`);
 
     // Initialize a new object for this host
     siteMapping = {
@@ -100,13 +84,5 @@ export default async function setupAndSaveSiteSelectors(
     knownDomainMappings[hostName] = siteMapping;
   }
 
-  return [
-    siteMapping.Make,
-    siteMapping.typeSelector,
-    siteMapping.modelSelector,
-    siteMapping.trimSelector,
-    siteMapping.imageSelector,
-    siteMapping.descriptionSelector,
-    siteMapping.webFeaturesSelector,
-  ];
+  return siteMapping
 }
