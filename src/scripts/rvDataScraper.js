@@ -139,7 +139,7 @@ async function extractData(page, siteMappings) {
       imageSelector,
       descriptionSelector,
       webFeaturesSelector,
-     } = siteMappings;
+    } = siteMappings;
     const rows = document.querySelectorAll("tbody tr");
 
     const data = {};
@@ -182,7 +182,7 @@ async function extractData(page, siteMappings) {
  *
  * @param {Object} extractedData - The data object with keys as they were extracted from the site.
  * @param {Object} synonymDictionary - An object where each key is a term used in the data source, and the corresponding value is the standardized term used in the database.
- * @param {string} hostName - The host name of the domain for which to set up or retrieve site selectors.
+ * @param {string} secondLevelDomain - The second level domain name for the site in which to set up or retrieve site selectors.
  * @returns {Object} renamedData - A new object with keys renamed to match the standardized database keys.
  * Any unrecognized keys will trigger a prompt for user input to provide a standardized key name,
  * which is then saved to the known key mappings for the current domain.
@@ -192,8 +192,9 @@ async function extractData(page, siteMappings) {
  * const renamedData = renameData(extractedData);
  * console.log(renamedData); // Output: { "Make": "Ford" }
  */
-function renameData(extractedData, synonymDictionary, hostName) {
-  const knownKeyMappings = knownDomainMappings[hostName].knownKeyMappings;
+function renameData(extractedData, synonymDictionary, secondLevelDomain) {
+  const knownKeyMappings =
+    knownDomainMappings[secondLevelDomain].knownKeyMappings;
   const renamedData = {};
 
   for (const currentKey of Object.keys(extractedData)) {
@@ -421,16 +422,20 @@ export default async function rvDataScraper({
       continue; // Continue with the next URL if navigation fails
     }
     await page.waitForSelector("table");
-    const hostName = getSecondLevelDomain(url);
+    const secondLevelDomain = getSecondLevelDomain(url);
     const siteMappings = await setupAndSaveSiteSelectors(
       knownDomainMappings,
-      hostName
+      secondLevelDomain
     );
 
     const extractedData = await extractData(page, siteMappings);
 
     // Rename each of the keys in the extracted data to correspond with the database keys
-    const renamedData = renameData(extractedData, synonymDictionary, hostName);
+    const renamedData = renameData(
+      extractedData,
+      synonymDictionary,
+      secondLevelDomain
+    );
 
     const transformedData = transformData(
       renamedData,
@@ -438,7 +443,7 @@ export default async function rvDataScraper({
       getLastUrlSegment(url),
       url
     );
-    
+
     await handleImageDownload(imagesOutputFolder, transformedData);
 
     appendDataToFile(outputFolder, transformedData, urlIndex, urls.length);

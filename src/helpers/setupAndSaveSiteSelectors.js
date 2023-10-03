@@ -70,7 +70,7 @@ function promptForSelector(variableName) {
  * If the domain is new, the function prompts the user to provide the necessary selectors and saves them to the knownDomainMappings object.
  *
  * @param {Object} knownDomainMappings - An object containing mappings of host names to site selectors.
- * @param {string} hostName - The host name of the domain for which to set up or retrieve site selectors.
+ * @param {string} secondLevelDomain - The second level domain name for the site in which to set up or retrieve site selectors.
  * @returns {Promise<Object>} A promise that resolves to an object containing the site selectors for the specified domain.
  * @throws Will throw an error if there is a problem during the user prompting process.
  *
@@ -79,14 +79,16 @@ function promptForSelector(variableName) {
  */
 export default async function setupAndSaveSiteSelectors(
   knownDomainMappings,
-  hostName
+  secondLevelDomain
 ) {
   let siteMappings;
 
-  if (hostName in knownDomainMappings) {
-    siteMappings = knownDomainMappings[hostName];
+  if (secondLevelDomain in knownDomainMappings) {
+    siteMappings = knownDomainMappings[secondLevelDomain];
   } else {
-    console.log(`\nEnter site selectors for new domain: "${hostName}"`);
+    console.log(
+      `\nEnter site selectors for new domain: "${secondLevelDomain}"`
+    );
 
     // Initialize a new object for this host
     siteMappings = {
@@ -101,7 +103,7 @@ export default async function setupAndSaveSiteSelectors(
     };
 
     // Save the new siteMappings object back to knownDomainMappings
-    knownDomainMappings[hostName] = siteMappings;
+    knownDomainMappings[secondLevelDomain] = siteMappings;
   }
 
   return siteMappings;
