@@ -182,6 +182,7 @@ async function extractData(page, siteMappings) {
  *
  * @param {Object} extractedData - The data object with keys as they were extracted from the site.
  * @param {Object} synonymDictionary - An object where each key is a term used in the data source, and the corresponding value is the standardized term used in the database.
+ * @param {string} hostName - The host name of the domain for which to set up or retrieve site selectors.
  * @returns {Object} renamedData - A new object with keys renamed to match the standardized database keys.
  * Any unrecognized keys will trigger a prompt for user input to provide a standardized key name,
  * which is then saved to the known key mappings for the current domain.
@@ -191,7 +192,7 @@ async function extractData(page, siteMappings) {
  * const renamedData = renameData(extractedData);
  * console.log(renamedData); // Output: { "Make": "Ford" }
  */
-function renameData(extractedData, synonymDictionary) {
+function renameData(extractedData, synonymDictionary, hostName) {
   const knownKeyMappings = knownDomainMappings[hostName].knownKeyMappings;
   const renamedData = {};
 
@@ -429,7 +430,7 @@ export default async function rvDataScraper({
     const extractedData = await extractData(page, siteMappings);
 
     // Rename each of the keys in the extracted data to correspond with the database keys
-    const renamedData = renameData(extractedData, synonymDictionary);
+    const renamedData = renameData(extractedData, synonymDictionary, hostName);
 
     const transformedData = transformData(
       renamedData,
