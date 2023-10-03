@@ -36,6 +36,46 @@
     "webFeaturesSelector": "#exterior > div",
     "rowSelector": "table tr",
     "dlSelector": null,
-    "knownKeyMappings": {}
+    "knownKeyMappings": {
+      "Specification Name": null,
+      "RV Type": "Type",
+      "MSRP": null,
+      "Shipping Weight": "Dry weight lbs",
+      "Carrying Capacity": "CCC",
+      "Hitch": null,
+      "Length": "Length ftin",
+      "Height": "Height closed ftin",
+      "Tire-Size": "Tire Code",
+      "Fresh Water": "Number of fresh water holding tanks",
+      "Gray Water": "Number of gray water holding tanks",
+      "Waste Water": "Total black water tank capacity gall",
+      "Sleeping Capacity": "Max sleeping count",
+      "Number of Propane Tanks": "Number of propane tanks",
+      "LPG": "Total propane tank capacity gallbs",
+      "Refrigerator Size": "Refrigerator size"
+    }
+  },
+  "forestriverinc": {
+    "Make": "Forest River",
+    "typeSelector": "#modelDetailsHeaderBar > div > div > div.col-12.col-md-6.col-xl-5.col-xxl-4.p-3.px-xxl-4.my-auto > h1 > span.model-details-3.d-none.d-md-block.mt-1",
+    "modelSelector": "#modelDetailsHeaderBar > div > div > div.col-12.col-md-6.col-xl-5.col-xxl-4.p-3.px-xxl-4.my-auto > div > a:nth-child(3)",
+    "trimSelector": "#modelDetailsHeaderBar > div > div > div.col-12.col-md-6.col-xl-5.col-xxl-4.p-3.px-xxl-4.my-auto > h1 > span.fw-normal",
+    "imageSelector": "#maincontent > div.container-fluid.w-100.mt-2.mt-md-4.px-0.px-lg-5 > div > div.col-12.col-lg-10.col-xxl-6.px-2.mx-md-auto.mh-100 > a > img",
+    "descriptionSelector": null,
+    "rowSelector": null,
+    "dlSelector": "#maincontent > div.container-fluid.w-100.mt-2.mt-md-4.px-0.px-lg-5 > div > div:nth-child(2) > div.bg-grey.px-1.px-md-4.pt-1.pt-md-4.pb-1 > dl",
+    "webFeaturesSelector": "#Features12253 > div",
+    "knownKeyMappings": {
+      "Hitch Weight": null,
+      "GVWR": "Gvwr lbskgs",
+      "UVW": "Dry weight lbs",
+      "Exterior Length": "Length ftin",
+      "Exterior Height": "Height closed ftin",
+      "Exterior Width": "Width inmm",
+      "Fresh Water": "Total fresh water tank capacity gall",
+      "Gray Water": "Total gray water tank capacity gall",
+      "Black Water": "Number of black water holding tanks",
+      "Awning Size": "Awning length ftm"
+    }
   }
 }

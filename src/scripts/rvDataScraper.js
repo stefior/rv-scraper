@@ -119,7 +119,7 @@ async function extractData(page, siteMappings) {
 
     function queryAndTrim(selector) {
       const element = document.querySelector(selector);
-      return element ? element.textContent.trim() : null;
+      return element ? element.textContent.replace(/\s+/g, " ").trim() : null;
     }
 
     data["Web Features"] = queryAndTrim(sM.webFeaturesSelector);
@@ -165,21 +165,18 @@ function promptForKeyMapping(unrecognizedKey, synonymDictionary) {
         (userInput) => {
           const standardKeyName = userInput.trim();
 
-          if (standardKeyName === 'null') {
-            console.log(
-              `Mapping confirmed ('${unrecognizedKey}' -> null)`
-            );
+          if (standardKeyName === "null") {
+            console.log(`    Mapping confirmed ('${unrecognizedKey}' -> null)`);
             rl.close();
             resolve(null);
-          }
-          else if (Object.keys(synonymDictionary).includes(standardKeyName)) {
+          } else if (Object.keys(synonymDictionary).includes(standardKeyName)) {
             console.log(
-              `Mapping confirmed ('${unrecognizedKey}' -> '${standardKeyName}')`
+              `    Mapping confirmed ('${unrecognizedKey}' -> '${standardKeyName}')`
             );
             rl.close();
             resolve(standardKeyName);
           } else {
-            console.log("Standard key name invalid. Try again:\n");
+            console.log("Invalid key. Try again.");
             ask();
           }
         }
@@ -232,6 +229,9 @@ async function renameKeys(extractedData, synonymDictionary, secondLevelDomain) {
       renamedData[newKeyName] = extractedData[currentKey];
     }
   }
+  delete renamedData.null;
+  console.log(renamedData);
+
   return renamedData;
 }
 
@@ -259,33 +259,34 @@ function transformData(renamedData, rvYear, lastUrlSegment, url) {
   // TODO: add for all data[currentKey] = formatValue(data[currentKey]); //// NEEDS TESTING ////
   //
   const transformedData = JSON.parse(JSON.stringify(renamedData));
+  const tD = transformedData;
 
-  transformedData.url = url;
-  transformedData.Year = rvYear;
-  transformedData["Floor plan"] = lastUrlSegment;
-  if (!transformedData.Type) transformedData.Type = getRvTypeFromUrl(url);
-  if (!transformedData.Trim) {
-    transformedData.Trim = lastUrlSegment;
-    transformedData.verifyManually.push("Trim");
+  tD.url = url;
+  tD.Year = rvYear;
+  tD["Floor plan"] = lastUrlSegment;
+  if (!tD.Type) tD.Type = getRvTypeFromUrl(url);
+  if (!tD.Trim) {
+    tD.Trim = lastUrlSegment;
+    tD.verifyManually.push("Trim");
   }
-  transformedData.Name = `${transformedData.Year} ${transformedData.Make} ${transformedData.Model} ${transformedData.Trim}`;
+  tD.Name = `${tD.Year} ${tD.Make} ${tD.Model} ${tD.Trim}`;
 
-  if ("Awning length ftm" in transformedData) {
-    transformedData["Awning length ftm"] = splitAwningMeasurements(
-      transformedData["Awning length ftm"]
+  if ("Awning length ftm" in tD) {
+    tD["Awning length ftm"] = splitAwningMeasurements(
+      tD["Awning length ftm"]
     );
   }
 
-  addMissingGvwrUvwCcc(transformedData);
+  addMissingGvwrUvwCcc(tD);
 
-  if ("Tire Code" in transformedData) {
-    const tireData = parseTireCode(transformedData["Tire Code"]);
-    transformedData["Rear tire diameter in"] = tireData.tireDiameterIn;
+  if ("Tire Code" in tD) {
+    const tireData = parseTireCode(tD["Tire Code"]);
+    tD["Rear tire diameter in"] = tireData.tireDiameterIn;
     // Wheel width and wheel diameter are different, but diameter is likely what was meant
-    transformedData["Rear wheel width in"] = tireData.wheelDiameterIn;
+    tD["Rear wheel width in"] = tireData.wheelDiameterIn;
   }
 
-  return transformedData;
+  return tD;
 }
 
 /**
@@ -309,7 +310,7 @@ async function handleImageDownload(outputFolder, transformedData) {
     transformedData["Floor plan"],
     outputFolder
   ).catch((err) => {
-    console.error(`Error downloading image: ${err}`);
+    throw new Error(`Error downloading image: ${err}`);
   });
 }
 
@@ -445,10 +446,6 @@ export default async function rvDataScraper({
       failedNavigations.push(url);
       continue; // Continue with the next URL if navigation fails, listing all failures at the end
     }
-    await page.waitForSelector("table");
-    await page.waitForSelector(
-      "div.floorplan-hero-image > div > img.img-loaded"
-    ); /////////////////////////////////////////////////////////////////////
     const secondLevelDomain = getSecondLevelDomain(url);
     const siteMappings = await setupAndSaveSiteSelectors(
       knownDomainMappings,
@@ -489,65 +486,7 @@ export default async function rvDataScraper({
   await browser.close();
 }
 
-const urls = [
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/211BHSWE",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/221RBS",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/243BHSWE",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/250BHS",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/250BHSWE",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/253RBSWE",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/253RDS",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/253RDSWE",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/258RKS",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/258RKSWE",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/260RBS",
-  "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans/260RBSWE",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/1800RB",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/1850RB",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/1890RB",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/1890RBWE",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/2200BH",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/2200BHWE",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/2210BH",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/2210BHWE",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/2220ML",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/2220MLWE",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/2290BH",
-  "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans/2290BHWE",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/174RK",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/200RLWE",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/20RDN",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/20RDNWE",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/21BHNWE",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/22MLS",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/22MLSWE",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/240BHWE",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/24BHSWE",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/24RBS",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/24RBSWE",
-  "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans/24RKSWE",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3123RL",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3231CK",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3531RE",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3761FL",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3781RL",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3793RD",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3795FK",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3857BR",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3901RK",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3915TB",
-  "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans/3941FO",
-  "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans/295RL",
-  "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans/311RD",
-  "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans/331RL",
-  "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans/335BH",
-  "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans/351BH",
-  "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans/373RD",
-  "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans/377FL",
-  "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans/381TB",
-  "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans/385BR",
-  "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans/389BH",
-];
+const urls = ["https://forestriverinc.com/rvs/vengeance-rogue-sut/29SUT/8965"];
 const knownDomainMappings = JSON.parse(
   fs.readFileSync("./known-domain-mappings.json", "utf-8")
 );

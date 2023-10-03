@@ -9,6 +9,7 @@
     "gross vehicle weight rating",
     "gross weight"
   ],
+  "CCC": ["carrying capacity"],
   "Year": ["year", "year of manufacture", "manufacturing year"],
   "Make": ["make", "brand", "manufacturer"],
   "Model": ["model", "model name"],

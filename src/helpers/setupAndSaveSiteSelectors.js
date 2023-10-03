@@ -37,7 +37,7 @@ function promptForValue(variableName) {
 
       function ask() {
         rl.question(
-          `\nPlease enter a selector for ${variableName}, or else null:\n    `,
+          `Please enter a selector for ${variableName}, or else null:\n    `,
           (selector) => {
             selector = selector.trim();
 
@@ -102,7 +102,7 @@ export default async function setupAndSaveSiteSelectors(
     siteMappings = knownDomainMappings[secondLevelDomain];
   } else {
     console.log(
-      `\nEnter variable values for new domain: "${secondLevelDomain}"`
+      `\nEnter variable values for new domain: "${secondLevelDomain}"\n`
     );
 
     // Initialize a new object for this host

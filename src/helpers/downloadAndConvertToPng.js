@@ -18,7 +18,7 @@ async function handleError(promise, errorMessage) {
  *
  * @param {string} url - The URL of the image to download.
  * @param {string} fileName - The name to use when saving the image file (without extension).
- * @param {string} directory [directory='/images'] - The directory to save the image to.
+ * @param {string} outputFolder [outputFolder='./output/images/'] - The folder to save the image to.
  *
  * @throws Will throw an error if there's a problem fetching the image or writing to disk.
  *
@@ -34,29 +34,33 @@ async function handleError(promise, errorMessage) {
 export default async function downloadAndConvertImage(
   url,
   fileName,
-  directory = "./images"
+  outputFolder = "./output/images/"
 ) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch image: ${response.statusText}`);
+  let response;
+  try {
+    console.log(url)
+    response = await fetch(url);
+  } catch (err) {
+    throw new Error(`Failed to fetch image: ${err.message}`);
   }
+
   const arrayBuffer = await response.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const ext = path.extname(url).toLowerCase().split("?")[0];
 
   await handleError(
-    fs.promises.mkdir(directory, { recursive: true }),
-    "Error while making specified directory"
+    fs.promises.mkdir(outputFolder, { recursive: true }),
+    "Error while making specified output folder"
   );
 
-  const savePath = path.join(directory, `${fileName}${ext}`);
+  const savePath = path.join(outputFolder, `${fileName}${ext}`);
   await handleError(
     fs.promises.writeFile(savePath, buffer),
     "Failed to write original image"
   );
 
   if (ext !== ".png") {
-    const pngPath = path.join(directory, `${fileName}.png`);
+    const pngPath = path.join(outputFolder, `${fileName}.png`);
 
     await handleError(
       execAsync(`magick "${savePath}" "${pngPath}"`),

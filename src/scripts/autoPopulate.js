@@ -13,8 +13,8 @@ import isUrlValid from "../helpers/isUrlValid.js";
  * @param {string} formPageUrl - URL for the form page.
  * @returns {boolean} Returns true if all parameters are valid, false otherwise.
  */
-function validateParameters(jsonString, loginUrl, formPageUrl) {
-  if (!fs.existsSync(jsonString)) {
+function validateParameters(inputFile, jsonString, loginUrl, formPageUrl) {
+  if (!fs.existsSync(inputFile)) {
     console.error("Input file not found");
     return false;
   }
@@ -137,7 +137,7 @@ async function fillInForm(page, formPageUrl, dataObject, standardizedValues) {
         "input[name=floor_plan][type=file]"
       );
       if (fileInputElement) {
-        const filePath = path.resolve("images", value + ".png");
+        const filePath = path.resolve("./output/images", value + ".png");
         if (fs.existsSync(filePath)) {
           await fileInputElement.focus();
           await fileInputElement.uploadFile(filePath);
@@ -275,7 +275,7 @@ export default async function autoPopulate({
   standardizedValues,
 }) {
   const jsonString = fs.readFileSync(inputFile, "utf8");
-  if (!validateParameters(jsonString, loginUrl, formPageUrl)) return;
+  if (!validateParameters(inputFile, jsonString, loginUrl, formPageUrl)) return;
 
   const jsonData = JSON.parse(jsonString);
   console.log(`Populating database with the contents of "${inputFile}" ...`);
@@ -284,9 +284,9 @@ export default async function autoPopulate({
   const browser = await puppeteer.launch({ headless: false });
   let page = await browser.newPage();
 
-  await signIn(page, loginUrl);
-  // New page in order to bypass auto-opened dialog box after submitting
-  page = await browser.newPage();
+  // await signIn(page, loginUrl);
+  // // New page in order to bypass auto-opened dialog box after submitting
+  // page = await browser.newPage();
 
   for (const dataObject of jsonData) {
     await fillInForm(page, formPageUrl, dataObject, standardizedValues);
@@ -322,8 +322,8 @@ const standardizedValues = JSON.parse(
   fs.readFileSync("./standardized-values.json", "utf-8")
 );
 autoPopulate({
-  // inputFile: "./output/testing.json",
-  // formPageUrl: "http://localhost:5500/populate-testing.html",
+  inputFile: "./output/forest-river.json",
+  formPageUrl: "http://localhost:5500/populate-testing.html",
   // inputFile: "./output/outdoors-rv.json",
 
   // formPageUrl:

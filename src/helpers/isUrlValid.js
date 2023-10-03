@@ -8,8 +8,7 @@
  *
  *
  * @param {string} url - The URL string to validate.
- * @returns {boolean} - Returns true if the URL is valid, otherwise throws an error.
- * @throws Will throw an error if the URL is invalid.
+ * @returns {boolean} - Returns true if the URL is valid, otherwise returns false.
  *
  * @example
  * isUrlValid('https://example.com'); // returns true
@@ -17,13 +16,13 @@
  */
 export default function isUrlValid(url) {
   if (typeof url !== "string" || url.startsWith("data:")) {
-    throw new Error(`Invalid URL: ${url}`);
+    return false;
   }
 
   try {
     new URL(url);
     return true;
   } catch (err) {
-    throw new Error(`Invalid URL: ${url}\n${err}`);
+    return false;
   }
 }
