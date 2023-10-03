@@ -1,6 +1,7 @@
 import readline from "readline";
-import { parse } from "css-what";
+import { createParser } from "css-selector-parser";
 
+const parse = createParser();
 /**
  * @param {string} selector - A CSS selector.
  * @returns {boolean} - True if a valid CSS selector, otherwise false.

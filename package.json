@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "bottleneck": "^2.19.5",
+    "css-selector-parser": "^3.0.0",
     "css-what": "^6.1.0",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.3.1",
