@@ -68,6 +68,28 @@ async function signIn(page, loginUrl) {
 }
 
 /**
+ * Pastes a given text into a specified page element. This function operates
+ * faster compared to typing the text in, as it sets the value property of the
+ * element directly.
+ *
+ * @async
+ * @function
+ * @param {puppeteer.ElementHandle} el - The puppeteer element handle.
+ * @param {string} val - The text value to paste into the element.
+ *
+ * @example
+ * const inputElement = await page.$('input[name="username"]');
+ * await pasteText(inputElement, 'exampleUser');
+ */
+async function pasteText(el, val) {
+  // It's faster to set the value of the element than having it type it in
+  await el.evaluate((element, value) => {
+    if (!element) return;
+    return (element.value = String(value));
+  }, val);
+}
+
+/**
  * Navigates to a form page, and fills out the form with the data from a provided object.
  *
  * @async
@@ -182,28 +204,6 @@ async function generateAiDescription(
       `Error with AI description generation or submission: ${err.message}`
     );
   }
-}
-
-/**
- * Pastes a given text into a specified page element. This function operates
- * faster compared to typing the text in, as it sets the value property of the
- * element directly.
- *
- * @async
- * @function
- * @param {puppeteer.ElementHandle} el - The puppeteer element handle.
- * @param {string} val - The text value to paste into the element.
- *
- * @example
- * const inputElement = await page.$('input[name="username"]');
- * await pasteText(inputElement, 'exampleUser');
- */
-async function pasteText(el, val) {
-  // It's faster to set the value of the element than having it type it in
-  await el.evaluate((element, value) => {
-    if (!element) return;
-    return (element.value = String(value));
-  }, val);
 }
 
 /**

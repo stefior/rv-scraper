@@ -70,21 +70,6 @@ function getSecondLevelDomain(url) {
 }
 
 /**
- * Retrieves the last segment of the URL path.
- *
- * @param {string} url - The URL from which to extract the last segment.
- * @returns {string} - Returns the last segment of the URL path.
- */
-function getLastUrlSegment(url) {
-  const urlObj = new URL(url);
-  const pathSegments = urlObj.pathname
-    .split("/")
-    .filter((segment) => segment !== "");
-  const urlTail = pathSegments.slice(-1)[0];
-  return urlTail;
-}
-
-/**
  * Prompts the user to provide a standard key name for an unrecognized key,
  * using a recursive approach to re-prompt the user until a valid standard key name is provided.
  *
@@ -280,9 +265,8 @@ function transformData(extractedData, rvYear, lastUrlSegment, url) {
 }
 
 /**
- * Handles the downloading and conversion of an image to PNG format. This function creates
- * a new directory for images if it doesn't exist, and then attempts to download and convert
- * the image using the provided `downloadAndConvertToPng` function.
+ * Handles the downloading and conversion of an image to PNG format. This function attempts to
+ * download and convert the image to png.
  *
  * @async
  * @param {string} outputFolder - The path to the folder where images should be saved.
@@ -290,17 +274,16 @@ function transformData(extractedData, rvYear, lastUrlSegment, url) {
  * @throws Will throw an error if it fails to download or convert the image.
  *
  * @example
- * const outputFolder = "./output";
- * const extractedData = { imageUrl: "https://example.com/image.jpg", "Floor plan": "Plan A" };
+ * const outputFolder = "./output/images";
+ * const extractedData = { imageUrl: "https://example.com/image.jpg", "Floor plan": "150BD", etc. };
  * await handleImageDownload(outputFolder, extractedData);
  * // The image is now downloaded, converted to PNG, and saved in the specified folder.
  */
 async function handleImageDownload(outputFolder, extractedData) {
-  const imagesOutputFolder = path.join(outputFolder, "images");
   await downloadAndConvertToPng(
     extractedData.imageUrl,
     extractedData["Floor plan"],
-    imagesOutputFolder
+    outputFolder
   ).catch((err) => {
     throw new Error(`Error downloading image: ${err}`);
   });
@@ -426,6 +409,7 @@ export default async function rvDataScraper({
 
   let urlIndex = 0;
   const failedNavigations = [];
+  const imagesOutputFolder = path.join(outputFolder, "images");
   for (const url of urls) {
     try {
       await page.goto(url);
@@ -452,8 +436,8 @@ export default async function rvDataScraper({
       getLastUrlSegment(url),
       url
     );
-
-    await handleImageDownload(outputFolder, transformedData);
+    
+    await handleImageDownload(imagesOutputFolder, transformedData);
 
     appendDataToFile(outputFolder, transformedData, urlIndex, urls.length);
 
