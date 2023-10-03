@@ -77,7 +77,7 @@ function getSecondLevelDomain(url) {
  * @param {Object} synonymDictionary - An object where each key is a term used in the data source, and the corresponding value is the standardized term used in the database.
  * @returns {Promise<string>} - A promise that resolves to the standard key name provided by the user.
  */
-function promptUser(unrecognizedKey, synonymDictionary) {
+function promptForKeyMapping(unrecognizedKey, synonymDictionary) {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({
       input: process.stdin,
@@ -89,6 +89,7 @@ function promptUser(unrecognizedKey, synonymDictionary) {
         `Unrecognized key: '${unrecognizedKey}'\nPlease enter the standard key name: `,
         (userInput) => {
           const standardKeyName = userInput.trim();
+
           if (Object.keys(synonymDictionary).includes(standardKeyName)) {
             console.log(
               `Mapping confirmed ('${unrecognizedKey}' -> '${standardKeyName}')`
@@ -201,7 +202,7 @@ function renameData(extractedData, synonymDictionary) {
       renamedData[newKeyName] = extractedData[currentKey];
     } else {
       // Ask user what *standardized key* the key from the site is referring to
-      const newKeyName = promptUser(currentKey, synonymDictionary);
+      const newKeyName = promptForKeyMapping(currentKey, synonymDictionary);
       // Map the key name from the site to the one for the database
       knownKeyMappings[currentKey] = newKeyName;
       // Change the key name in the extracted data to the one for the database

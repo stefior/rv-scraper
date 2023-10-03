@@ -1,18 +1,32 @@
 import readline from "readline";
+import { parse } from "css-what";
 
 /**
- * Prompts the user to input a value for a specified variable via the console.
+ * @param {string} selector - A CSS selector.
+ * @returns {boolean} - True if a valid CSS selector, otherwise false.
+ */
+function isValidCssSelector(selector) {
+  try {
+    parse(selector);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+/**
+ * Prompts the user to input a selector for a specified selector variable via the console.
  * If the user inputs 'null', the function resolves to null.
  * If the user inputs an empty string, they will be re-prompted until a non-empty value or 'null' is entered.
  *
- * @param {string} variableName - The name of the variable the user is being prompted to provide a value for.
+ * @param {string} variableName - The name of the selector variable the user is being prompted to provide a value for.
  * @returns {Promise<string|null>} A promise that resolves to the user's input or null.
  * @throws Will throw an error if there's an issue during prompting.
  *
  * @example
  * const userValue = await promptUser('someVariable');
  */
-function promptUser(variableName) {
+function promptForSelector(variableName) {
   return new Promise((resolve, reject) => {
     try {
       const rl = readline.createInterface({
@@ -22,19 +36,22 @@ function promptUser(variableName) {
 
       function ask() {
         rl.question(
-          `Please enter a value for ${variableName}, or else null: `,
-          (answer) => {
-            answer = answer.trim()
-            
-            if (answer.includes("null")) {
+          `Please enter a selector for ${variableName}, or else null: `,
+          (selector) => {
+            selector = selector.trim();
+
+            if (selector.includes("null")) {
               rl.close();
               resolve(null);
-            } else if (answer === "") {
+            } else if (!isValidCssSelector(selector)) {
+              console.log("Invalid selector. Please try again.");
+              ask();
+            } else if (selector === "") {
               console.log("Input cannot be empty. Please try again.");
               ask();
             } else {
               rl.close();
-              resolve(answer);
+              resolve(selector);
             }
           }
         );
@@ -48,7 +65,7 @@ function promptUser(variableName) {
 }
 
 /**
- * Sets up and saves site selectors for a specified domain. 
+ * Sets up and saves site selectors for a specified domain.
  * If the domain is known, the function retrieves the existing site selectors from the knownDomainMappings object.
  * If the domain is new, the function prompts the user to provide the necessary selectors and saves them to the knownDomainMappings object.
  *
@@ -60,7 +77,10 @@ function promptUser(variableName) {
  * @example
  * const siteSelectors = await setupAndSaveSiteSelectors(knownMappings, 'example.com');
  */
-export default async function setupAndSaveSiteSelectors(knownDomainMappings, hostName) {
+export default async function setupAndSaveSiteSelectors(
+  knownDomainMappings,
+  hostName
+) {
   let siteMappings;
 
   if (hostName in knownDomainMappings) {
@@ -70,13 +90,13 @@ export default async function setupAndSaveSiteSelectors(knownDomainMappings, hos
 
     // Initialize a new object for this host
     siteMappings = {
-      Make: await promptUser("Make"),
-      typeSelector: await promptUser("typeSelector"),
-      modelSelector: await promptUser("modelSelector"),
-      trimSelector: await promptUser("trimSelector"),
-      imageSelector: await promptUser("imageSelector"),
-      descriptionSelector: await promptUser("descriptionSelector"),
-      webFeaturesSelector: await promptUser("webFeaturesSelector"),
+      Make: await promptForSelector("Make"),
+      typeSelector: await promptForSelector("typeSelector"),
+      modelSelector: await promptForSelector("modelSelector"),
+      trimSelector: await promptForSelector("trimSelector"),
+      imageSelector: await promptForSelector("imageSelector"),
+      descriptionSelector: await promptForSelector("descriptionSelector"),
+      webFeaturesSelector: await promptForSelector("webFeaturesSelector"),
       knownKeyMappings: {},
     };
 
@@ -84,5 +104,5 @@ export default async function setupAndSaveSiteSelectors(knownDomainMappings, hos
     knownDomainMappings[hostName] = siteMappings;
   }
 
-  return siteMappings
+  return siteMappings;
 }
