@@ -10,6 +10,7 @@ import {
   addMissingGvwrUvwCcc,
   getRvTypeFromUrl,
   setupAndSaveSiteSelectors,
+  getLastUrlSegment,
 } from "../helpers/index.js";
 
 /**
