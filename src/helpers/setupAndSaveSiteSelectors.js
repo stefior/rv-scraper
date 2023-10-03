@@ -61,15 +61,15 @@ function promptUser(variableName) {
  * const siteSelectors = await setupAndSaveSiteSelectors(knownMappings, 'example.com');
  */
 export default async function setupAndSaveSiteSelectors(knownDomainMappings, hostName) {
-  let siteMapping;
+  let siteMappings;
 
   if (hostName in knownDomainMappings) {
-    siteMapping = knownDomainMappings[hostName];
+    siteMappings = knownDomainMappings[hostName];
   } else {
     console.log(`\nEnter site selectors for new domain: "${hostName}"`);
 
     // Initialize a new object for this host
-    siteMapping = {
+    siteMappings = {
       Make: await promptUser("Make"),
       typeSelector: await promptUser("typeSelector"),
       modelSelector: await promptUser("modelSelector"),
@@ -80,9 +80,9 @@ export default async function setupAndSaveSiteSelectors(knownDomainMappings, hos
       knownKeyMappings: {},
     };
 
-    // Save the new siteMapping object back to knownDomainMappings
-    knownDomainMappings[hostName] = siteMapping;
+    // Save the new siteMappings object back to knownDomainMappings
+    knownDomainMappings[hostName] = siteMappings;
   }
 
-  return siteMapping
+  return siteMappings
 }
