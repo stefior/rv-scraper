@@ -192,12 +192,14 @@ async function generateAiDescription(
   try {
     await aiButton.click();
     // Wait for AI to fill in the textbox before moving on
+    await page.waitForNetworkIdle();
+
     await page.waitForFunction(
       (selector) => {
-        document.querySelector(selector).value.length > 0,
-          aiDescriptionSelector;
+        return document.querySelector(selector).value.length > 0;
       },
-      { timeout: 60000 } // 60 seconds
+      { timeout: 60000 }, // 60 seconds
+      aiDescriptionSelector
     );
   } catch (err) {
     throw new Error(
@@ -230,19 +232,29 @@ async function submitForm(
   }
   await publishButton.click();
 
-  // Wait for success confirmation before either moving on or aborting after 30 seconds
+  function sleep(seconds) {
+    const ms = seconds * 1000;
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  // Wait for success confirmation before either moving on or aborting after 60 seconds
   try {
+    // Necessary for page.waitForFunction() to detect the submission 100% of the time
+    await sleep(2);
+    
     await page.waitForFunction(
-      () => {
-        document
-          .querySelector(confirmationDivSelector)
-          .textContent.includes("Data has been added successfully.");
+      (selector) => {
+        const textContent = document.querySelector(selector).textContent;
+        return textContent.includes("added successfully");
       },
-      { timeout: 60000 } // 60 seconds
+      { timeout: 60000 }, // 60 seconds
+      confirmationDivSelector
     );
-    console.log(`Submitted form for "${rvName}"`);
+    console.log(`    Submitted form for "${rvName}"`);
   } catch (err) {
-    throw new Error(`Form failed to submit for "${rvName}": ${err.message}`);
+    throw new Error(
+      `Form likely failed to submit for "${rvName}": ${err.message}`
+    );
   }
 }
 
@@ -280,13 +292,13 @@ export default async function autoPopulate({
   const jsonData = JSON.parse(jsonString);
   console.log(`Populating database with the contents of "${inputFile}" ...`);
 
-  // Needs to be headful for uploading images to work with this code
+  // NEEDS TO BE HEADFUL for uploading images to work
   const browser = await puppeteer.launch({ headless: false });
   let page = await browser.newPage();
 
-  // await signIn(page, loginUrl);
-  // // New page in order to bypass auto-opened dialog box after submitting
-  // page = await browser.newPage();
+  await signIn(page, loginUrl);
+  // New page in order to bypass possible auto-opened dialog box after submitting
+  page = await browser.newPage();
 
   for (const dataObject of jsonData) {
     await fillInForm(page, formPageUrl, dataObject, standardizedValues);
@@ -314,7 +326,7 @@ export default async function autoPopulate({
     );
   }
 
-  console.log("Finished submitting all successfully");
+  console.log("--Finished submitting all successfully--");
   await browser.close();
 }
 
@@ -322,11 +334,11 @@ const standardizedValues = JSON.parse(
   fs.readFileSync("./standardized-values.json", "utf-8")
 );
 autoPopulate({
-  inputFile: "./output/forest-river.json",
-  formPageUrl: "http://localhost:5500/populate-testing.html",
-  // inputFile: "./output/outdoors-rv.json",
+  // inputFile: "./output/testing.json",
+  // formPageUrl: "http://localhost:5500/populate-testing.html",
 
-  // formPageUrl:
+  inputFile: "./output/keystone.json",
+  formPageUrl:
 
   standardizedValues,
 });
