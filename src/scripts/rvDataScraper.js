@@ -145,7 +145,7 @@ function promptUser(unrecognizedKey, synonymDictionary) {
  */
 async function extractData(page, siteMappings) {
   return page.evaluate((siteMappings) => {
-    const [
+    const {
       Make,
       typeSelector,
       modelSelector,
@@ -153,7 +153,7 @@ async function extractData(page, siteMappings) {
       imageSelector,
       descriptionSelector,
       webFeaturesSelector,
-    ] = siteMappings;
+     } = siteMappings;
     const rows = document.querySelectorAll("tbody tr");
 
     const data = {};
