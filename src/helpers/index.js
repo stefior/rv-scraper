@@ -3,6 +3,7 @@ export { default as downloadAndConvertToPng } from "./downloadAndConvertToPng.js
 export { default as feetInchesToInches } from "./feetInchesToInches.js";
 export { default as fieldFunctionMapper } from "./fieldFunctionMapper.js";
 export { default as formatValue } from "./formatValue.js";
+export { default as getLastUrlSegment } from "./getLastUrlSegment.js";
 export { default as getRvTypeFromUrl } from "./getRvTypeFromUrl.js";
 export { default as isUrlValid } from "./isUrlValid.js";
 export { default as parseTireCode } from "./parseTireCode.js";
