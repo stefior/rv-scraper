@@ -1,4 +1,5 @@
 import fs from "fs";
+import backupFile from "./backupFile";
 
 /**
  * Maps a function to each record in a JSON file.
@@ -34,7 +35,7 @@ export default function fieldFunctionMapper(inputFile, func) {
   }
 
   try {
-    fs.copyFileSync(inputFile, `${inputFile}.bak`);
+    backupFile(inputFile, "./backups");
     fs.writeFileSync(inputFile, JSON.stringify(jsonData), "utf-8");
   } catch (err) {
     throw new Error(`Error backing up & writing to file: ${err}`);
