@@ -19,14 +19,14 @@ import {
  * @param {Object} params - The input parameters object.
  * @param {number} params.rvYear - The RV year, expected to be a four-digit number.
  * @param {Array} params.urls - The URLs array, expected to be non-empty.
- * @param {Object} params.knownDomainMappings - The known domain mappings object, expected to be non-empty.
+ * @param {Object} params.domainsMappings - The known domain mappings object, expected to be non-empty.
  * @param {string} params.outputFolder - The output folder path, expected to be a non-empty string.
  * @returns {boolean} Returns true if all parameters are valid, otherwise false.
  */
 function validateParameters({
   rvYear,
   urls,
-  knownDomainMappings,
+  domainsMappings,
   outputFolder,
 }) {
   if (isNaN(rvYear) || String(rvYear).length !== 4) {
@@ -40,10 +40,10 @@ function validateParameters({
   }
 
   if (
-    typeof knownDomainMappings !== "object" ||
-    Object.keys(knownDomainMappings).length === 0
+    typeof domainsMappings !== "object" ||
+    Object.keys(domainsMappings).length === 0
   ) {
-    console.error("knownDomainMappings parameter must be a non-empty object");
+    console.error("domainsMappings parameter must be a non-empty object");
     return false;
   }
 
@@ -200,22 +200,22 @@ function promptForKeyMapping(unrecognizedKey, synonymDictionary) {
  * which is then saved to the known key mappings for the current domain.
  *
  * @example
- * // Suppose knownKeyMappings = { "Brand": "Make" }, and extractedData = { "Brand": "Ford" }
+ * // Suppose keyMappings = { "Brand": "Make" }, and extractedData = { "Brand": "Ford" }
  * const renamedData = renameData(extractedData);
  * console.log(renamedData); // Output: { "Make": "Ford" }
  */
 async function renameKeys(extractedData, synonymDictionary, secondLevelDomain) {
-  const knownKeyMappings =
-    knownDomainMappings[secondLevelDomain].knownKeyMappings;
+  const keyMappings =
+    domainsMappings[secondLevelDomain].keyMappings;
   const renamedData = {};
 
   for (const currentKey of Object.keys(extractedData)) {
     if (currentKey in synonymDictionary) {
       // It's already the correct name in this case
       renamedData[currentKey] = extractedData[currentKey];
-    } else if (currentKey in knownKeyMappings) {
+    } else if (currentKey in keyMappings) {
       // Change the key name in the extracted data to the one for the database
-      const newKeyName = knownKeyMappings[currentKey];
+      const newKeyName = keyMappings[currentKey];
       renamedData[newKeyName] = extractedData[currentKey];
     } else {
       // Ask user what *standardized key* the key from the site is referring to
@@ -224,7 +224,7 @@ async function renameKeys(extractedData, synonymDictionary, secondLevelDomain) {
         synonymDictionary
       );
       // Map the key name from the site to the one for the database
-      knownKeyMappings[currentKey] = newKeyName;
+      keyMappings[currentKey] = newKeyName;
       // Change the key name in the extracted data to the one for the database
       renamedData[newKeyName] = extractedData[currentKey];
     }
@@ -368,22 +368,22 @@ function appendDataToFile(outputFolder, extractedData, urlIndex, totalUrls) {
 }
 
 /**
- * Saves the domain mappings to a JSON file. This function attempts to write the `knownDomainMappings`
+ * Saves the domain mappings to a JSON file. This function attempts to write the `domainsMappings`
  * object to a file named `known-domain-mappings.json`. If the write operation fails, an error is thrown.
  *
- * @param {Object} knownDomainMappings - The object containing domain mappings to be saved.
+ * @param {Object} domainsMappings - The object containing domain mappings to be saved.
  * @throws Will throw an error if it fails to write the domain mappings to the file.
  *
  * @example
- * const knownDomainMappings = { "example.com": { Make: "make-selector", Model: "model-selector" } };
- * saveDomainMappings(knownDomainMappings);
+ * const domainsMappings = { "example.com": { Make: "make-selector", Model: "model-selector" } };
+ * saveDomainMappings(domainsMappings);
  * // The known domain mappings are now saved to a file named `known-domain-mappings.json`.
  */
-function saveDomainMappings(knownDomainMappings) {
+function saveDomainMappings(domainsMappings) {
   try {
     fs.writeFileSync(
       "known-domain-mappings.json",
-      JSON.stringify(knownDomainMappings, null, 2)
+      JSON.stringify(domainsMappings, null, 2)
     );
   } catch (err) {
     throw new Error(
@@ -404,7 +404,7 @@ function saveDomainMappings(knownDomainMappings) {
  * @param {Object} params - The input parameters for the data scraper.
  * @param {number} params.rvYear - The model year of the RVs to be scraped.
  * @param {Array<string>} params.urls - An array of URLs to scrape data from.
- * @param {Object} params.knownDomainMappings - An object containing known domain mappings which help in data extraction.
+ * @param {Object} params.domainsMappings - An object containing known domain mappings which help in data extraction.
  * @param {Object} params.synonymDictionary - An object where each key is a term used in the data source, and the corresponding value is the standardized term used in the database.
  * @param {string} [params.outputFolder="./output"] - The directory where the scraped data will be saved.
  *
@@ -416,18 +416,18 @@ function saveDomainMappings(knownDomainMappings) {
  * await rvDataScraper({
  *   rvYear: 2023,
  *   urls: ['https://example.com/rv1', 'https://example.com/rv2'],
- *   knownDomainMappings: {...},
+ *   domainsMappings: {...},
  *   outputFolder: './data'
  * });
  */
 export default async function rvDataScraper({
   rvYear,
   urls,
-  knownDomainMappings,
+  domainsMappings,
   synonymDictionary,
   outputFolder = "./output",
 }) {
-  if (!validateParameters({ rvYear, urls, knownDomainMappings, outputFolder }))
+  if (!validateParameters({ rvYear, urls, domainsMappings, outputFolder }))
     return;
   const browser = await puppeteer.launch({ headless: "new" });
   const page = await browser.newPage();
@@ -448,7 +448,7 @@ export default async function rvDataScraper({
     }
     const secondLevelDomain = getSecondLevelDomain(url);
     const siteMappings = await setupAndSaveSiteSelectors(
-      knownDomainMappings,
+      domainsMappings,
       secondLevelDomain
     );
 
@@ -482,13 +482,13 @@ export default async function rvDataScraper({
     );
   }
 
-  saveDomainMappings(knownDomainMappings);
+  saveDomainMappings(domainsMappings);
   await browser.close();
 }
 
 const urls = ["https://forestriverinc.com/rvs/vengeance-rogue-sut/29SUT/8965"];
-const knownDomainMappings = JSON.parse(
-  fs.readFileSync("./known-domain-mappings.json", "utf-8")
+const domainsMappings = JSON.parse(
+  fs.readFileSync("./domain-mappings.json", "utf-8")
 );
 const synonymDictionary = JSON.parse(
   fs.readFileSync("./synonym-dictionary.json", "utf-8")
@@ -497,6 +497,6 @@ const synonymDictionary = JSON.parse(
 rvDataScraper({
   rvYear: 2024,
   urls,
-  knownDomainMappings,
+  domainsMappings,
   synonymDictionary,
 });

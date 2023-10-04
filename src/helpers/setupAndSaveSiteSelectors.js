@@ -66,7 +66,7 @@ function promptForValue(variableName) {
 }
 
 /**
- * @typedef {Object} SiteMappings
+ * @typedef {Object} siteMappings
  * @property {string} Make - The make of the RV.
  * @property {string} typeSelector - CSS Selector for the type field.
  * @property {string} modelSelector - CSS Selector for the model field.
@@ -81,25 +81,25 @@ function promptForValue(variableName) {
 
 /**
  * Sets up and saves site selectors for a specified domain.
- * If the domain is known, the function retrieves the existing site selectors from the knownDomainMappings object.
- * If the domain is new, the function prompts the user to provide the necessary selectors and saves them to the knownDomainMappings object.
+ * If the domain is known, the function retrieves the existing site selectors from the domainsMappings object.
+ * If the domain is new, the function prompts the user to provide the necessary selectors and saves them to the domainsMappings object.
  *
- * @param {Object} knownDomainMappings - An object containing mappings of host names to site selectors.
+ * @param {Object} domainsMappings - An object containing mappings of host names to site selectors.
  * @param {string} secondLevelDomain - The second level domain name for the site in which to set up or retrieve site selectors.
- * @returns {Promise<SiteMappings>} A promise that resolves to an object containing the site selectors for the specified domain.
+ * @returns {Promise<siteMappings>} A promise that resolves to an object containing the site selectors for the specified domain.
  * @throws Will throw an error if there is a problem during the user prompting process.
  *
  * @example
  * const siteSelectors = await setupAndSaveSiteSelectors(knownMappings, 'example.com');
  */
 export default async function setupAndSaveSiteSelectors(
-  knownDomainMappings,
+  domainsMappings,
   secondLevelDomain
 ) {
   let siteMappings;
 
-  if (secondLevelDomain in knownDomainMappings) {
-    siteMappings = knownDomainMappings[secondLevelDomain];
+  if (secondLevelDomain in domainsMappings) {
+    siteMappings = domainsMappings[secondLevelDomain];
   } else {
     console.log(
       `\nEnter variable values for new domain: "${secondLevelDomain}"\n`
@@ -119,8 +119,8 @@ export default async function setupAndSaveSiteSelectors(
       knownKeyMappings: {},
     };
 
-    // Save the new siteMappings object back to knownDomainMappings
-    knownDomainMappings[secondLevelDomain] = siteMappings;
+    // Save the new siteMappings object back to domainsMappings
+    domainsMappings[secondLevelDomain] = siteMappings;
   }
 
   return siteMappings;
