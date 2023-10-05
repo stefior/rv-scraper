@@ -141,8 +141,29 @@ async function extractData(page, siteMappings) {
   }, siteMappings);
 }
 
+/**
+ * Prompts the user to confirm whether a given key-value mapping is correct.
+ * The function keeps prompting the user until a valid response (y/n) is received.
+ *
+ * @param {string} unsureKey - The key whose mapping is uncertain.
+ * @param {string} unsureKeysValue - The value associated with the unsure key.
+ * @param {Object} synonymDictionary - An object containing known key mappings.
+ * @returns {Promise<boolean>} A promise that resolves to true if the user confirms the mapping, or false if the user denies it.
+ *
+ * @example
+ * const isCorrect = await isMappingCorrectPrompt('exampleKey', 'exampleValue', {exampleKey: 'correctKey'});
+ * if(isCorrect) {
+ *   // Proceed with the confirmed mapping
+ * } else {
+ *   // Handle incorrect mapping
+ * }
+ */
 function isMappingCorrectPrompt(unsureKey, unsureKeysValue, synonymDictionary) {
-  return new Promise((resolve, reject) => {  
+  // ...function body...
+}
+
+function isMappingCorrectPrompt(unsureKey, unsureKeysValue, synonymDictionary) {
+  return new Promise((resolve, reject) => {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -261,9 +282,11 @@ async function renameKeys(extractedData, siteMappings, synonymDictionary) {
       continue;
     } else if (currentKey in synonymDictionary) {
       if (synonymDictionary[currentKey] === null) continue;
-      
+
       // It's already definitely correct in this case
-      if (currentKey.toLowerCase() === synonymDictionary[currentKey].toLowerCase()) {
+      if (
+        currentKey.toLowerCase() === synonymDictionary[currentKey].toLowerCase()
+      ) {
         renamedData[currentKey] = extractedData[currentKey];
         continue;
       }
