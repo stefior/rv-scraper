@@ -11,7 +11,7 @@ import fs from "fs";
  * @example
  * prependAppendBrackets('path/to/file.json');
  */
-function prependAppendBrackets(filePath) {
+export default function prependAppendBrackets(filePath) {
   try {
     let data = fs.readFileSync(filePath, "utf8");
 
