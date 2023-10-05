@@ -15,6 +15,7 @@ import {
   saveDomainMappings,
   prependAppendBrackets,
 } from "../helpers/index.js";
+import extractAllSelectorLinks from "./extractAllSelectorLinks.js";
 
 /**
  * Validates the input parameters for the rvDataScraper function.
@@ -161,10 +162,6 @@ async function extractData(page, siteMappings) {
  * }
  */
 function isMappingCorrectPrompt(unsureKey, unsureKeysValue, synonymDictionary) {
-  // ...function body...
-}
-
-function isMappingCorrectPrompt(unsureKey, unsureKeysValue, synonymDictionary) {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({
       input: process.stdin,
@@ -290,7 +287,7 @@ async function renameKeys(extractedData, siteMappings, synonymDictionary) {
         renamedData[currentKey] = extractedData[currentKey];
         continue;
       }
-
+      console.log(siteMappings);
       // It might be correct in this case, but it needs to be confirmed
       // since some sites have clashing names for the fields
       const isMappingCorrect = await isMappingCorrectPrompt(
@@ -405,10 +402,6 @@ async function handleImageDownload(outputFolder, transformedData) {
  *
  * @param {string} outputFolder - The path to the folder where the data should be saved.
  * @param {Object} extractedData - The data object to be appended to the file.
- * @param {number} urlIndex - The index of the current URL being processed, used to determine if
- *                             this is the first or last entry in the JSON array.
- * @param {number} totalUrls - The total number of URLs being processed, used to determine if this
- *                             is the last entry in the JSON array.
  * @throws Will throw an error if it fails to append data to the file.
  *
  * @example
@@ -428,35 +421,10 @@ function appendDataToFile(outputFolder, extractedData) {
   );
 
   try {
-    fs.appendFileSync(outputFile, JSON.stringify(extractedData, null, 4), ",");
+    fs.appendFileSync(outputFile, JSON.stringify(extractedData, null, 4) + ",");
   } catch (err) {
     throw new Error(
       `Failed to append data to file for "${extractedData.Name}"`
-    );
-  }
-}
-
-/**
- * Saves the domain mappings to a JSON file. This function attempts to write the `domainsMappings`
- * object to a file named `domain-mappings.json`. If the write operation fails, an error is thrown.
- *
- * @param {Object} domainsMappings - The object containing domain mappings to be saved.
- * @throws Will throw an error if it fails to write the domain mappings to the file.
- *
- * @example
- * const domainsMappings = { "example.com": { Make: "make-selector", Model: "model-selector" } };
- * saveDomainMappings(domainsMappings);
- * // The known domain mappings are now saved to a file named `domain-mappings.json`.
- */
-function saveDomainMappings(domainsMappings) {
-  try {
-    fs.writeFileSync(
-      "domains-mappings.json",
-      JSON.stringify(domainsMappings, null, 2)
-    );
-  } catch (err) {
-    throw new Error(
-      `Failed to write new known domain mappings to file: ${err.message}`
     );
   }
 }
@@ -502,7 +470,6 @@ export default async function rvDataScraper({
   const page = await browser.newPage();
   // Set viewport is so that mobile styles aren't applied due to puppeteer using a 783 px window by default
   await page.setViewport({ width: 1920, height: 1080 });
-
   let urlIndex = 0;
   const failedNavigations = [];
   const imagesOutputFolder = path.join(outputFolder, "images");
@@ -521,8 +488,6 @@ export default async function rvDataScraper({
       domainsMappings,
       secondLevelDomain
     );
-    saveDomainMappings(domainsMappings);
-    console.log("Domain selectors saved or retrieved.");
 
     const extractedData = await extractData(page, siteMappings);
 
@@ -595,7 +560,45 @@ export default async function rvDataScraper({
   await browser.close();
 }
 
-const urls = ["https://www.thormotorcoach.com/vegas/floor-plans/24.1"];
+const mainUrls = {
+  "div.specCell.button-specCell-desktop > a": [
+    "https://www.granddesignrv.com/toy-haulers/momentum-m-class",
+    "https://www.granddesignrv.com/fifth-wheels/reflection",
+    "https://www.granddesignrv.com/travel-trailers/reflection",
+    "https://www.granddesignrv.com/fifth-wheels/solitude",
+    "https://www.granddesignrv.com/travel-trailers/transcend-xplor",
+    "https://www.granddesignrv.com/toy-haulers/momentum-mav",
+  ],
+  "#syncScroll > th > a": [
+    "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/specs",
+    "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/specs",
+    "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/specs",
+    "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/specs",
+    "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/specs",
+  ],
+  "div.ls-layers > div > div > a": [
+    "https://www.outdoorsrvmfg.com/back-country-class/",
+    "https://www.outdoorsrvmfg.com/blackstone-2/",
+    "https://www.outdoorsrvmfg.com/creek-side/",
+    "https://www.outdoorsrvmfg.com/timber-ridge/",
+  ],
+  "#floorplansList > li > div:first-of-type > a": [
+    "https://forestriverinc.com/rvs/travel-trailers/wolf-pup",
+    "https://forestriverinc.com/rvs/travel-trailers/grey-wolf",
+    "https://forestriverinc.com/rvs/travel-trailers-and-fifth-wheels/cherokee",
+    "https://forestriverinc.com/rvs/wolf-pack",
+    "https://forestriverinc.com/rvs/vibe",
+    "https://forestriverinc.com/rvs/vengeance-rogue-armored",
+    "https://forestriverinc.com/rvs/vengeance-rogue-sut",
+  ],
+  "a.floor-plan-card-wrapper": [
+    "https://www.thormotorcoach.com/windsport",
+    "https://www.thormotorcoach.com/vegas",
+    "https://www.thormotorcoach.com/four-winds",
+  ],
+};
+
+const urls = await extractAllSelectorLinks(mainUrls);
 const domainsMappings = JSON.parse(
   fs.readFileSync("./domains-mappings.json", "utf-8")
 );
@@ -603,7 +606,7 @@ const synonymDictionary = JSON.parse(
   fs.readFileSync("./synonym-dictionary.json", "utf-8")
 );
 
-rvDataScraper({
+await rvDataScraper({
   rvYear: 2024,
   urls,
   domainsMappings,

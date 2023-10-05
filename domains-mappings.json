@@ -25,7 +25,9 @@
       "Heavy Duty 5 Lug Axles (lbs)": "Number of axles",
       "Good Year Tire Size": "Tire Code",
       "Load Range": null,
-      "Dry Hitch Weight (approx. Lbs.)": null
+      "Dry Hitch Weight (approx. Lbs.)": null,
+      "Exterior Length (approx. hitch to back of ladder)": "Length ftin",
+      "Heavy Duty 6 Lug Axles (lbs)": "Number of axles"
     }
   },
   "keystonerv": {
