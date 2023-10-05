@@ -419,7 +419,7 @@ async function handleImageDownload(outputFolder, transformedData) {
  * appendData(outputFolder, extractedData, urlIndex, totalUrls);
  * // The extractedData object is now appended to the specified file in the output folder.
  */
-function appendDataToFile(outputFolder, extractedData, urlIndex, totalUrls) {
+function appendDataToFile(outputFolder, extractedData) {
   if (!fs.existsSync(outputFolder)) fs.mkdirSync(outputFolder);
 
   const outputFile = path.join(
@@ -427,21 +427,8 @@ function appendDataToFile(outputFolder, extractedData, urlIndex, totalUrls) {
     extractedData.Make.toLowerCase().replace(/\s+/g, "-") + ".json"
   );
 
-  // Append opening bracket for the first URL
-  if (urlIndex === 0) {
-    fs.appendFileSync(outputFile, "[");
-  }
-
   try {
-    // Append the data object
-    fs.appendFileSync(outputFile, JSON.stringify(extractedData, null, 4));
-
-    // Append closing bracket for the last URL or a comma for others
-    if (urlIndex === totalUrls - 1) {
-      fs.appendFileSync(outputFile, "]");
-    } else {
-      fs.appendFileSync(outputFile, ",");
-    }
+    fs.appendFileSync(outputFile, JSON.stringify(extractedData, null, 4), ",");
   } catch (err) {
     throw new Error(
       `Failed to append data to file for "${extractedData.Name}"`
@@ -556,11 +543,22 @@ export default async function rvDataScraper({
 
     await handleImageDownload(imagesOutputFolder, transformedData);
 
-    appendDataToFile(outputFolder, transformedData, urlIndex, urls.length);
+    appendDataToFile(outputFolder, transformedData);
 
     console.log(`Scraped and saved data for ${urlIndex + 1} of ${urls.length}`);
     urlIndex++;
   }
+  // Turn outputted json files into arrays
+  const files = fs.readdirSync(directoryPath);
+  for (const file of files) {
+    const filePath = path.join(directoryPath, file);
+    const stats = fs.statSync(filePath);
+    if (stats.isDirectory()) {
+      continue;
+    }
+    prependAppendBrackets(filePath);
+  }
+
   if (failedNavigations.length > 0) {
     console.log(
       "\nScraper failed to navigate to these URLs:\n",
