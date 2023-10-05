@@ -8,6 +8,8 @@ export { default as getLastUrlSegment } from "./getLastUrlSegment.js";
 export { default as getRvTypeFromUrl } from "./getRvTypeFromUrl.js";
 export { default as isUrlValid } from "./isUrlValid.js";
 export { default as parseTireCode } from "./parseTireCode.js";
+export { default as prependAppendBrackets } from "./prependAppendBrackets.js";
+export { default as saveDomainMappings } from "./saveDomainMappings.js";
 export { default as setupSiteSelectors } from "./setupSiteSelectors.js";
 export { default as splitAwningMeasurements } from "./splitAwningMeasurements.js";
 export { default as strNumToNum } from "./strNumToNum.js";

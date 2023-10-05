@@ -1,6 +1,8 @@
 import readline from "readline";
 import { createParser } from "css-selector-parser";
 
+import saveDomainMappings from "./saveDomainMappings.js";
+
 const parse = createParser();
 /**
  * @param {string} selector - A CSS selector.
@@ -121,6 +123,7 @@ export default async function setupSiteSelectors(
 
     // Save the new siteMappings object back to domainsMappings
     domainsMappings[secondLevelDomain] = siteMappings;
+    saveDomainMappings(domainsMappings);
   }
 
   return siteMappings;

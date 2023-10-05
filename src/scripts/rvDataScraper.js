@@ -12,6 +12,8 @@ import {
   setupSiteSelectors,
   getLastUrlSegment,
   backupFile,
+  saveDomainMappings,
+  prependAppendBrackets,
 } from "../helpers/index.js";
 
 /**
@@ -272,8 +274,6 @@ async function renameKeys(extractedData, siteMappings, synonymDictionary) {
   const savedKeyMappings = siteMappings.keyMappings;
   const renamedData = {};
 
-  backupFile("synonym-dictionary.json");
-
   for (const currentKey of Object.keys(extractedData)) {
     if (currentKey in savedKeyMappings) {
       // Change the key name in the extracted data to the one for the database
@@ -507,6 +507,7 @@ export default async function rvDataScraper({
   const failedNavigations = [];
   const imagesOutputFolder = path.join(outputFolder, "images");
 
+  backupFile("synonym-dictionary.json");
   for (const url of urls) {
     try {
       // Waiting for load event is so the scraper doesn't scrape temporary placeholder images
@@ -532,7 +533,6 @@ export default async function rvDataScraper({
       synonymDictionary
     );
     saveDomainMappings(domainsMappings);
-    console.log("Domain mappings saved or retrieved.");
 
     const transformedData = transformData(
       renamedData,
