@@ -41,11 +41,25 @@
 export default function parseTireCode(tireCode) {
   const pattern =
     /(PT|LT|ST|T|)(\d{3})\/(\d{2,3})\/?\s?(B|D|R|)(\d{1,2})([A-N]?)/;
-  let matches;
-  matches = Array.from(pattern.exec(tireCode));
+
+     
+  let matches = pattern.exec(tireCode);
   if (!matches) {
-    throw new Error("Invalid tire code format");
+    console.error("ERROR: Invalid tire code format");
+    return {
+      tireCode,
+      vehicleClass: null,
+      sectionWidthMM: null,
+      sectionWidthIn: null,
+      aspectRatio: null,
+      construction: null,
+      wheelDiameterIn: null,
+      tireDiameterIn: null,
+      loadRange: null,
+      plyRating: null,
+    };
   }
+  matches = Array.from(matches)
 
   const [
     ,
