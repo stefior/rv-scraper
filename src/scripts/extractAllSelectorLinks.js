@@ -15,9 +15,10 @@ const limiter = new Bottleneck({ maxConcurrent: MAX_CONCURRENT });
 async function extractLinks(url, selector, browser) {
   try {
     const page = await browser.newPage();
-    await page.goto(url);
+    await page.setViewport({ width: 1920, height: 1080 });
+    await page.goto(url, { timeout: 0 });
 
-    await page.waitForSelector(selector);
+    await page.waitForSelector(selector, { timeout: 0 });
     const links = await page.$$eval(selector, (allAs) => {
       return Array.from(allAs, (a) => a.href);
     });
@@ -26,7 +27,7 @@ async function extractLinks(url, selector, browser) {
     await page.close();
     return links;
   } catch (err) {
-    console.error(`Error extracting urls for ${url}\n${err}`);
+    console.error(`\n\nError extracting urls for ${url}\n${err}`);
     return [];
   }
 }
@@ -85,16 +86,6 @@ export default async function extractAllSelectorLinks(urlsObject) {
   return allMappedLinks.flat();
 }
 
-// Can use Copy All URLs (free) chrome extension for getting the main pages that
-// you want the links from, then use multi cursor in VS code to easily turn it into an array
-// e.g. Ctrl + Alt + Up/Down, then home/end to add the quotes and commas
-
-// let output = await extractAllSelectorLinks({
-//   "div.ls-layers a": [
-//     "https://www.outdoorsrvmfg.com/back-country-class/",
-//     "https://www.outdoorsrvmfg.com/blackstone-2/",
-//     "https://www.outdoorsrvmfg.com/creek-side/",
-//     "https://www.outdoorsrvmfg.com/timber-ridge/",
-//   ],
-// });
-// console.log(output);
+// Can use Copy All URLs chrome extension to copy the urls of the main pages that have the
+// many links you want, then use multi cursor in VS code to easily turn it into an array
+// The output can then be copied into or piped into rvDataScraper.js
