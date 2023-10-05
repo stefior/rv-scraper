@@ -548,15 +548,41 @@ export default async function rvDataScraper({
     console.log(`Scraped and saved data for ${urlIndex + 1} of ${urls.length}`);
     urlIndex++;
   }
-  // Turn outputted json files into arrays
-  const files = fs.readdirSync(directoryPath);
+  const files = fs.readdirSync(outputFolder);
   for (const file of files) {
-    const filePath = path.join(directoryPath, file);
+    // Turn outputted json files into arrays
+    const filePath = path.join(outputFolder, file);
     const stats = fs.statSync(filePath);
     if (stats.isDirectory()) {
       continue;
     }
     prependAppendBrackets(filePath);
+
+    // Filter out duplicate objects
+    const content = fs.readFileSync(filePath, "utf-8");
+    let jsonArr;
+    try {
+      jsonArr = JSON.parse(content);
+    } catch (error) {
+      console.error(`Failed to parse JSON from ${filePath}:`, error.message);
+      continue;
+    }
+    if (!Array.isArray(jsonArr)) {
+      console.error(`Content in ${filePath} is not an array.`);
+      continue;
+    }
+    const uniqueJsonArr = [];
+    const seenObjects = new Set();
+    for (const item of jsonArr) {
+      const strItem = JSON.stringify(item);
+      if (!seenObjects.has(strItem)) {
+        seenObjects.add(strItem);
+        uniqueJsonArr.push(item);
+      }
+    }
+
+    // Write the filtered array back to the file
+    fs.writeFileSync(filePath, JSON.stringify(uniqueJsonArr, null, 2));
   }
 
   if (failedNavigations.length > 0) {
