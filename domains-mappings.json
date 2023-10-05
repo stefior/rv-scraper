@@ -9,7 +9,7 @@
     "webFeaturesSelector": "body > div.wrapper > div > div > div > div > div > section > div:nth-child(6) > div > div:nth-child(2) > div > div > div:nth-child(2) > div > div > div > div > div:nth-child(3) > div",
     "rowSelector": "table tr",
     "dlSelector": null,
-    "knownKeyMappings": {
+    "keyMappings": {
       "Exterior Height": "Height closed ftin",
       "Exterior Length (approx. hitch to back of bumper)": "Length ftin",
       "Interior Height": "Interior height in",
@@ -23,7 +23,9 @@
       "Water Heater Capacity (approx. gal)": "Water heater tank capacity gl",
       "Climate Designed Furnace": "Heater",
       "Heavy Duty 5 Lug Axles (lbs)": "Number of axles",
-      "Good Year Tire Size": "Tire Code"
+      "Good Year Tire Size": "Tire Code",
+      "Load Range": null,
+      "Dry Hitch Weight (approx. Lbs.)": null
     }
   },
   "keystonerv": {
@@ -36,7 +38,7 @@
     "webFeaturesSelector": "#exterior > div",
     "rowSelector": "table tr",
     "dlSelector": null,
-    "knownKeyMappings": {
+    "keyMappings": {
       "Specification Name": null,
       "RV Type": "Type",
       "MSRP": null,
@@ -65,7 +67,7 @@
     "rowSelector": null,
     "dlSelector": "#maincontent > div.container-fluid.w-100.mt-2.mt-md-4.px-0.px-lg-5 > div > div:nth-child(2) > div.bg-grey.px-1.px-md-4.pt-1.pt-md-4.pb-1 > dl",
     "webFeaturesSelector": "#Features12253 > div",
-    "knownKeyMappings": {
+    "keyMappings": {
       "Hitch Weight": null,
       "GVWR": "Gvwr lbskgs",
       "UVW": "Dry weight lbs",
@@ -76,6 +78,86 @@
       "Gray Water": "Total gray water tank capacity gall",
       "Black Water": "Number of black water holding tanks",
       "Awning Size": "Awning length ftm"
+    }
+  },
+  "thormotorcoach": {
+    "Make": "Thor Motor Coach",
+    "typeSelector": null,
+    "modelSelector": "#mainContent > div > section.sticky-bar.hide-at-mobile.show-background-color.sticky > div > section > div > span.brand",
+    "trimSelector": "#mainContent > div > section.stacked-component.floor-plan-info-section.light.spacing > div > div > div > div:nth-child(1) > h1",
+    "imageSelector": "#mainContent > div > div.floor-plan-image > div > div.backdrop-image > picture > img",
+    "descriptionSelector": null,
+    "rowSelector": "#specifications > section > div > div > div > div",
+    "dlSelector": null,
+    "webFeaturesSelector": null,
+    "keyMappings": {
+      "Interior Height": "Interior height in",
+      "Brand": "Model",
+      "Awning Size": "Awning length ftm",
+      "Fuel Capacity": "Fuel capacity gal",
+      "Chassis": "Chassis brand",
+      "LPG": "Total propane tank capacity gallbs",
+      "Engine": "Displacement l",
+      "Fresh Water": "Total fresh water tank capacity gall",
+      "Horsepower & Torque": "Horsepower bhpkw",
+      "Waste Water": "Total black water tank capacity gall",
+      "GVWR": "Gvwr lbskgs",
+      "Gray Water": "Total gray water tank capacity gall",
+      "Water Heater": "Water heater tank capacity gl",
+      "Wheel Base": "Wheelbase inmm",
+      "Furnace": "Heater",
+      "Exterior Length (without ladder)": "Length ftin",
+      "Exterior Storage": "Storage capacity cuftgall",
+      "Exterior Height (with A/C)": "Height closed ftin",
+      "Exterior Width (w/o mirrors)": "Width inmm",
+      "Sleep Capacity": "Max sleeping count",
+      "Seat Belt Capacity": "Number of seats"
+    }
+  },
+  "granddesignrv": {
+    "Make": "Grand Design",
+    "typeSelector": null,
+    "modelSelector": "#subnav > ul > li.subnav-left__items__item.subnav-left__items__brand",
+    "trimSelector": "#subnav > ul > li.subnav-left__items__item.divide-x.dropdown > button > span",
+    "imageSelector": "#floorplan-overhead > p > img",
+    "descriptionSelector": null,
+    "rowSelector": "#detailed-specs tr",
+    "dlSelector": null,
+    "webFeaturesSelector": "#detailed-standards",
+    "keyMappings": {
+      "Exterior Height": "Height closed ftin",
+      "Exterior Height (w/opt. AC)": null,
+      "Exterior Length": "Length ftin",
+      "Exterior Width": "Width inmm",
+      "Exterior Width (w/ slide out)": null,
+      "Interior Height": "Interior height in",
+      "": null,
+      "Hitch / Pin Weight": null,
+      "UVW": "Dry weight lbs",
+      "GVWR": "Gvwr lbskgs",
+      "Fresh Water Capacity": "Total fresh water tank capacity gall",
+      "Grey Water Capacity": "Total gray water tank capacity gall",
+      "Waste Water Capacity": "Total black water tank capacity gall",
+      "Propane Tanks": "Number of propane tanks",
+      "LPG": "Total propane tank capacity gallbs",
+      "Sleeping Capacity": "Max sleeping count",
+      "Water Heater": "Water heater tank",
+      "Refrigerator": "Refrigerator size",
+      "Furnace": "Heater",
+      "AC": "Air conditioning",
+      "Axles": "Number of axles",
+      "Wheel Size": "Rear wheel width in",
+      "Tire Size": "Tire Code",
+      "Construction Type": null,
+      "Floor R-Value": null,
+      "Wall R-Value": null,
+      "Roof R-Value": null,
+      "Slide Room R-Value": null,
+      "Standard Bed": "Number of queen size beds",
+      "Standard Bunk": "Number of bunk beds",
+      "Slides": "Number of slideouts",
+      "Awnings": "Number of awnings",
+      "Awning Length": "Awning length ftm"
     }
   }
 }

@@ -9,8 +9,9 @@ import {
   parseTireCode,
   addMissingGvwrUvwCcc,
   getRvTypeFromUrl,
-  setupAndSaveSiteSelectors,
+  setupSiteSelectors,
   getLastUrlSegment,
+  backupFile,
 } from "../helpers/index.js";
 
 /**
@@ -23,12 +24,7 @@ import {
  * @param {string} params.outputFolder - The output folder path, expected to be a non-empty string.
  * @returns {boolean} Returns true if all parameters are valid, otherwise false.
  */
-function validateParameters({
-  rvYear,
-  urls,
-  domainsMappings,
-  outputFolder,
-}) {
+function validateParameters({ rvYear, urls, domainsMappings, outputFolder }) {
   if (isNaN(rvYear) || String(rvYear).length !== 4) {
     console.error("rvYear parameter must be a valid year number");
     return false;
@@ -118,6 +114,7 @@ async function extractData(page, siteMappings) {
     }
 
     function queryAndTrim(selector) {
+      // Not using querySelectorAll on purpose, since there should only be one of these
       const element = document.querySelector(selector);
       return element ? element.textContent.replace(/\s+/g, " ").trim() : null;
     }
@@ -144,16 +141,8 @@ async function extractData(page, siteMappings) {
   }, siteMappings);
 }
 
-/**
- * Prompts the user to provide a standard key name for an unrecognized key,
- * using a recursive approach to re-prompt the user until a valid standard key name is provided.
- *
- * @param {string} unrecognizedKey - The unrecognized key for which a standard key name is needed.
- * @param {Object} synonymDictionary - An object where each key is a term used in the data source, and the corresponding value is the standardized term used in the database.
- * @returns {Promise<string|null>} - A promise that resolves to the standard key name provided by the user or null if there is no mapping.
- */
-function promptForKeyMapping(unrecognizedKey, synonymDictionary) {
-  return new Promise((resolve, reject) => {
+function isMappingCorrectPrompt(unsureKey, unsureKeysValue, synonymDictionary) {
+  return new Promise((resolve, reject) => {  
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -161,17 +150,71 @@ function promptForKeyMapping(unrecognizedKey, synonymDictionary) {
 
     function ask() {
       rl.question(
-        `Unrecognized key: '${unrecognizedKey}'\nPlease enter the standard key name: `,
+        `Is the mapping '${unsureKey}' -> '${synonymDictionary[unsureKey]}' correct? y/n\nValue: ${unsureKeysValue}\n>`,
+        (userInput) => {
+          const answer = userInput.trim().toLowerCase();
+
+          if (answer === "y") {
+            console.log(
+              `    Mapping confirmed ('${unsureKey}' -> '${synonymDictionary[unsureKey]}')\n`
+            );
+            rl.close();
+            resolve(true);
+          } else if (answer === "n") {
+            console.log();
+            rl.close();
+            resolve(false);
+          } else {
+            console.log("Invalid response. Please enter either y or n.");
+            ask();
+          }
+        }
+      );
+    }
+
+    ask();
+  });
+}
+
+/**
+ * Prompts the user to provide a standard key name for an unrecognized key,
+ * using a recursive approach to re-prompt the user until a valid standard key name is provided.
+ *
+ * @param {string} unrecognizedKey - The unrecognized key for which a standard key name is needed.
+ * @param {any} unrecognizedKeysValue - The value of the unrecognized key.
+ * @param {Object} synonymDictionary - An object where each key is a term used in the data source, and the corresponding value is the standardized term used in the database.
+ * @returns {Promise<string|null>} - A promise that resolves to the standard key name provided by the user or null if there is no mapping.
+ */
+function promptForNewKeyMapping(
+  unrecognizedKey,
+  unrecognizedKeysValue,
+  synonymDictionary
+) {
+  return new Promise((resolve, reject) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    if (unrecognizedKey === "") {
+      resolve(null);
+    }
+
+    function ask() {
+      rl.question(
+        `Unrecognized key: '${unrecognizedKey}'\nValue: '${unrecognizedKeysValue}'\nPlease enter the standard key name or null: `,
         (userInput) => {
           const standardKeyName = userInput.trim();
 
           if (standardKeyName === "null") {
-            console.log(`    Mapping confirmed ('${unrecognizedKey}' -> null)`);
+            console.log(
+              `    Mapping confirmed ('${unrecognizedKey}' -> null)\n`
+            );
             rl.close();
             resolve(null);
           } else if (Object.keys(synonymDictionary).includes(standardKeyName)) {
             console.log(
-              `    Mapping confirmed ('${unrecognizedKey}' -> '${standardKeyName}')`
+              `    Mapping confirmed ('${unrecognizedKey}' -> '${standardKeyName}'\n)`
             );
             rl.close();
             resolve(standardKeyName);
@@ -204,33 +247,54 @@ function promptForKeyMapping(unrecognizedKey, synonymDictionary) {
  * const renamedData = renameData(extractedData);
  * console.log(renamedData); // Output: { "Make": "Ford" }
  */
-async function renameKeys(extractedData, synonymDictionary, secondLevelDomain) {
-  const keyMappings =
-    domainsMappings[secondLevelDomain].keyMappings;
+async function renameKeys(extractedData, siteMappings, synonymDictionary) {
+  const savedKeyMappings = siteMappings.keyMappings;
   const renamedData = {};
 
+  backupFile("synonym-dictionary.json");
+
   for (const currentKey of Object.keys(extractedData)) {
-    if (currentKey in synonymDictionary) {
-      // It's already the correct name in this case
-      renamedData[currentKey] = extractedData[currentKey];
-    } else if (currentKey in keyMappings) {
+    if (currentKey in savedKeyMappings) {
       // Change the key name in the extracted data to the one for the database
-      const newKeyName = keyMappings[currentKey];
+      const newKeyName = savedKeyMappings[currentKey];
       renamedData[newKeyName] = extractedData[currentKey];
-    } else {
-      // Ask user what *standardized key* the key from the site is referring to
-      const newKeyName = await promptForKeyMapping(
+      continue;
+    } else if (currentKey in synonymDictionary) {
+      if (synonymDictionary[currentKey] === null) continue;
+      
+      // It's already definitely correct in this case
+      if (currentKey.toLowerCase() === synonymDictionary[currentKey].toLowerCase()) {
+        renamedData[currentKey] = extractedData[currentKey];
+        continue;
+      }
+
+      // It might be correct in this case, but it needs to be confirmed
+      // since some sites have clashing names for the fields
+      const isMappingCorrect = await isMappingCorrectPrompt(
         currentKey,
+        extractedData[currentKey],
         synonymDictionary
       );
-      // Map the key name from the site to the one for the database
-      keyMappings[currentKey] = newKeyName;
-      // Change the key name in the extracted data to the one for the database
-      renamedData[newKeyName] = extractedData[currentKey];
+      if (isMappingCorrect) {
+        const newKeyName = synonymDictionary[currentKey];
+        savedKeyMappings[currentKey] = newKeyName;
+        renamedData[newKeyName] = extractedData[currentKey];
+        continue;
+      }
     }
+
+    // Ask user what *standardized key* the key from the site is referring to
+    const newKeyName = await promptForNewKeyMapping(
+      currentKey,
+      extractedData[currentKey],
+      synonymDictionary
+    );
+    // Map the key name from the site to the one for the database
+    savedKeyMappings[currentKey] = newKeyName;
+    // Change the key name in the extracted data to the one for the database
+    renamedData[newKeyName] = extractedData[currentKey];
   }
   delete renamedData.null;
-  console.log(renamedData);
 
   return renamedData;
 }
@@ -267,14 +331,11 @@ function transformData(renamedData, rvYear, lastUrlSegment, url) {
   if (!tD.Type) tD.Type = getRvTypeFromUrl(url);
   if (!tD.Trim) {
     tD.Trim = lastUrlSegment;
-    tD.verifyManually.push("Trim");
   }
   tD.Name = `${tD.Year} ${tD.Make} ${tD.Model} ${tD.Trim}`;
 
   if ("Awning length ftm" in tD) {
-    tD["Awning length ftm"] = splitAwningMeasurements(
-      tD["Awning length ftm"]
-    );
+    tD["Awning length ftm"] = splitAwningMeasurements(tD["Awning length ftm"]);
   }
 
   addMissingGvwrUvwCcc(tD);
@@ -310,7 +371,7 @@ async function handleImageDownload(outputFolder, transformedData) {
     transformedData["Floor plan"],
     outputFolder
   ).catch((err) => {
-    throw new Error(`Error downloading image: ${err}`);
+    console.error(`ERROR DOWNLOADING IMAGE: ${err}`);
   });
 }
 
@@ -336,10 +397,8 @@ async function handleImageDownload(outputFolder, transformedData) {
  * // The extractedData object is now appended to the specified file in the output folder.
  */
 function appendDataToFile(outputFolder, extractedData, urlIndex, totalUrls) {
-  // Ensure output folder exists
   if (!fs.existsSync(outputFolder)) fs.mkdirSync(outputFolder);
 
-  // Determine the output file path
   const outputFile = path.join(
     outputFolder,
     extractedData.Make.toLowerCase().replace(/\s+/g, "-") + ".json"
@@ -369,7 +428,7 @@ function appendDataToFile(outputFolder, extractedData, urlIndex, totalUrls) {
 
 /**
  * Saves the domain mappings to a JSON file. This function attempts to write the `domainsMappings`
- * object to a file named `known-domain-mappings.json`. If the write operation fails, an error is thrown.
+ * object to a file named `domain-mappings.json`. If the write operation fails, an error is thrown.
  *
  * @param {Object} domainsMappings - The object containing domain mappings to be saved.
  * @throws Will throw an error if it fails to write the domain mappings to the file.
@@ -377,12 +436,12 @@ function appendDataToFile(outputFolder, extractedData, urlIndex, totalUrls) {
  * @example
  * const domainsMappings = { "example.com": { Make: "make-selector", Model: "model-selector" } };
  * saveDomainMappings(domainsMappings);
- * // The known domain mappings are now saved to a file named `known-domain-mappings.json`.
+ * // The known domain mappings are now saved to a file named `domain-mappings.json`.
  */
 function saveDomainMappings(domainsMappings) {
   try {
     fs.writeFileSync(
-      "known-domain-mappings.json",
+      "domains-mappings.json",
       JSON.stringify(domainsMappings, null, 2)
     );
   } catch (err) {
@@ -431,6 +490,7 @@ export default async function rvDataScraper({
     return;
   const browser = await puppeteer.launch({ headless: "new" });
   const page = await browser.newPage();
+  // Set viewport is so that mobile styles aren't applied due to puppeteer using a 783 px window by default
   await page.setViewport({ width: 1920, height: 1080 });
 
   let urlIndex = 0;
@@ -441,25 +501,28 @@ export default async function rvDataScraper({
     try {
       // Waiting for load event is so the scraper doesn't scrape temporary placeholder images
       await page.goto(url, { waitUntil: "load" });
-      // Set viewport is so that mobile styles aren't applied due to puppeteer using a 783 px window by default
     } catch (err) {
       failedNavigations.push(url);
       continue; // Continue with the next URL if navigation fails, listing all failures at the end
     }
     const secondLevelDomain = getSecondLevelDomain(url);
-    const siteMappings = await setupAndSaveSiteSelectors(
+    const siteMappings = await setupSiteSelectors(
       domainsMappings,
       secondLevelDomain
     );
+    saveDomainMappings(domainsMappings);
+    console.log("Domain selectors saved or retrieved.");
 
     const extractedData = await extractData(page, siteMappings);
 
     // Rename each of the keys in the extracted data to correspond with the database keys
     const renamedData = await renameKeys(
       extractedData,
-      synonymDictionary,
-      secondLevelDomain
+      siteMappings,
+      synonymDictionary
     );
+    saveDomainMappings(domainsMappings);
+    console.log("Domain mappings saved or retrieved.");
 
     const transformedData = transformData(
       renamedData,
@@ -482,13 +545,12 @@ export default async function rvDataScraper({
     );
   }
 
-  saveDomainMappings(domainsMappings);
   await browser.close();
 }
 
-const urls = ["https://forestriverinc.com/rvs/vengeance-rogue-sut/29SUT/8965"];
+const urls = ["https://www.thormotorcoach.com/vegas/floor-plans/24.1"];
 const domainsMappings = JSON.parse(
-  fs.readFileSync("./domain-mappings.json", "utf-8")
+  fs.readFileSync("./domains-mappings.json", "utf-8")
 );
 const synonymDictionary = JSON.parse(
   fs.readFileSync("./synonym-dictionary.json", "utf-8")
