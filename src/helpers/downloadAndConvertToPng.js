@@ -38,7 +38,6 @@ export default async function downloadAndConvertImage(
 ) {
   let response;
   try {
-    console.log(url)
     response = await fetch(url);
   } catch (err) {
     throw new Error(`Failed to fetch image: ${err.message}`);

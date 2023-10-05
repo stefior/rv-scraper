@@ -20,7 +20,7 @@ function isValidCssSelector(selector) {
  * If the user inputs 'null', the function resolves to null.
  * If the user inputs an empty string, they will be re-prompted until a non-empty value or 'null' is entered.
  *
- * @param {string} variableName - The name of the selector variable the user is being prompted to provide a value for.
+ * @param {string} variableName - The name of the variable the user is being prompted to provide a value for.
  * @returns {Promise<string|null>} A promise that resolves to the user's input or null.
  * @throws Will throw an error if there's an issue during prompting.
  *
@@ -37,7 +37,7 @@ function promptForValue(variableName) {
 
       function ask() {
         rl.question(
-          `Please enter a selector for ${variableName}, or else null:\n    `,
+          `Please enter a value for ${variableName}, or else null:\n    `,
           (selector) => {
             selector = selector.trim();
 
@@ -80,9 +80,9 @@ function promptForValue(variableName) {
  */
 
 /**
- * Sets up and saves site selectors for a specified domain.
+ * Sets up and adds site selectors for a specified domain.
  * If the domain is known, the function retrieves the existing site selectors from the domainsMappings object.
- * If the domain is new, the function prompts the user to provide the necessary selectors and saves them to the domainsMappings object.
+ * If the domain is new, the function prompts the user to provide the necessary selectors and adds them to the domainsMappings object.
  *
  * @param {Object} domainsMappings - An object containing mappings of host names to site selectors.
  * @param {string} secondLevelDomain - The second level domain name for the site in which to set up or retrieve site selectors.
@@ -90,9 +90,9 @@ function promptForValue(variableName) {
  * @throws Will throw an error if there is a problem during the user prompting process.
  *
  * @example
- * const siteSelectors = await setupAndSaveSiteSelectors(knownMappings, 'example.com');
+ * const siteSelectors = await setupSiteSelectors(knownMappings, 'example.com');
  */
-export default async function setupAndSaveSiteSelectors(
+export default async function setupSiteSelectors(
   domainsMappings,
   secondLevelDomain
 ) {
@@ -116,7 +116,7 @@ export default async function setupAndSaveSiteSelectors(
       rowSelector: await promptForValue("rowSelector"),
       dlSelector: await promptForValue("dlSelector"),
       webFeaturesSelector: await promptForValue("webFeaturesSelector"),
-      knownKeyMappings: {},
+      keyMappings: {},
     };
 
     // Save the new siteMappings object back to domainsMappings

@@ -70,7 +70,7 @@ export default async function extractAllSelectorLinks(urlsObject) {
 
     for (const url of allLinksForGroup) {
       const task = limiter.schedule(() => {
-        console.log(`Extracting links from ${url} using selector ${selector}`);
+        console.log(`Extracting links from ${url}`);
         return extractLinks(url, selector, browser);
       });
       tasks.push(task);
@@ -90,12 +90,11 @@ export default async function extractAllSelectorLinks(urlsObject) {
 // e.g. Ctrl + Alt + Up/Down, then home/end to add the quotes and commas
 
 // let output = await extractAllSelectorLinks({
-//   "div.floorplan-result-wrapper > ul > li > a": [
-//     "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/floorplans",
-//     "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/floorplans",
-//     "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/floorplans",
-//     "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/floorplans",
-//     "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/floorplans",
+//   "div.ls-layers a": [
+//     "https://www.outdoorsrvmfg.com/back-country-class/",
+//     "https://www.outdoorsrvmfg.com/blackstone-2/",
+//     "https://www.outdoorsrvmfg.com/creek-side/",
+//     "https://www.outdoorsrvmfg.com/timber-ridge/",
 //   ],
 // });
-// console.log(output)
+// console.log(output);
