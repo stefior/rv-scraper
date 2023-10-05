@@ -2,6 +2,8 @@
 
 
 
+Workflow: extractAllSelectorLinks.js -> rvDataScraper.js -> autoPopulate.js
+
 ## Tips for Success
 
 - **Selector Accuracy**: When choosing a selector for scraping data, ensure that it matches on at least two different pages to verify its accuracy. The selector should be specific enough to avoid matching unwanted elements, as `document.querySelector()` does not always return what would seem to be the first match. It's advisable to test your selector on a couple pages to ensure consistency.
