@@ -1,5 +1,5 @@
 import fs from "fs";
-import backupFile from "./backupFile";
+import backupFile from "./backupFile.js";
 
 /**
  * Maps a function to each record in a JSON file.
