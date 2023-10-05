@@ -287,7 +287,7 @@ async function renameKeys(extractedData, siteMappings, synonymDictionary) {
         renamedData[currentKey] = extractedData[currentKey];
         continue;
       }
-      console.log(siteMappings);
+
       // It might be correct in this case, but it needs to be confirmed
       // since some sites have clashing names for the fields
       const isMappingCorrect = await isMappingCorrectPrompt(
