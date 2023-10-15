@@ -335,10 +335,6 @@ const standardizedValues = JSON.parse(
 );
 autoPopulate({
   // inputFile: "./output/testing.json",
-  // formPageUrl: "http://localhost:5500/populate-testing.html",
-
-  inputFile: "./output/keystone.json",
-  formPageUrl:
-
+  // formPageUrl: "http://localhost:5500/testing.html",
   standardizedValues,
 });
