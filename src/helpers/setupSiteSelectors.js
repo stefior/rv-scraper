@@ -1,9 +1,6 @@
 import readline from "readline";
-import { createParser } from "css-selector-parser";
 
 import saveDomainMappings from "./saveDomainMappings.js";
-
-const parse = createParser();
 
 /**
  * Prompts the user to input a selector for a specified selector variable via the console.
