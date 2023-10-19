@@ -15,7 +15,6 @@ import {
   saveDomainMappings,
   prependAppendBrackets,
 } from "../helpers/index.js";
-import extractAllSelectorLinks from "./extractAllSelectorLinks.js";
 
 /**
  * Validates the input parameters for the rvDataScraper function.

@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import Bottleneck from "bottleneck";
+import fs from "fs";
 
 const MAX_CONCURRENT = 36; // Config
 const limiter = new Bottleneck({ maxConcurrent: MAX_CONCURRENT });
@@ -78,14 +79,21 @@ export default async function extractAllSelectorLinks(urlsObject) {
     }
   }
 
-  const allMappedLinks = await Promise.all(tasks);
+  let allMappedLinks = await Promise.all(tasks);
+  allMappedLinks = allMappedLinks.flat()
 
   console.log("\n");
   await browser.close();
 
-  return allMappedLinks.flat();
+  fs.appendFileSync("extractedLinks.json", JSON.stringify(allMappedLinks));
+
+  return allMappedLinks;
 }
 
 // Can use Copy All URLs chrome extension to copy the urls of the main pages that have the
 // many links you want, then use multi cursor in VS code to easily turn it into an array
 // The output can then be copied into or piped into rvDataScraper.js
+extractAllSelectorLinks({
+  "": [
+  ],
+});
