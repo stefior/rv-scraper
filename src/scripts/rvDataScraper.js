@@ -80,78 +80,78 @@ function getSecondLevelDomain(url) {
 async function extractData(page, siteMappings, defaultYear) {
   const extractedData = await page.evaluate(
     (sM, defaultYear) => {
-    data = {};
+      data = {};
 
-    if (sM.rowSelector) {
-      const rows = document.querySelectorAll(sM.rowSelector);
+      if (sM.rowSelector) {
+        const rows = document.querySelectorAll(sM.rowSelector);
 
-      rows.forEach((row) => {
-        const cells = row.children;
+        rows.forEach((row) => {
+          const cells = row.children;
 
-        // Ensure there are at least two cells in the row before proceeding
-        if (cells.length >= 2) {
-          const key = cells[0].textContent.trim();
+          // Ensure there are at least two cells in the row before proceeding
+          if (cells.length >= 2) {
+            const key = cells[0].textContent.trim();
              value = cells[1].textContent.trim();
             // in case there is a spacer in betweeen
             if (!value && cells.length > 2) {
               value = cells[2].textContent.trim();
             }
 
-          data[key] = value; // Grab it all now, then just use what's useful later
-        }
-      });
-    }
-    if (sM.dlSelector) {
-      const descriptionList = document.querySelector("dl");
-      const descriptionTerms = descriptionList.querySelectorAll("dt");
-      const descriptionDetails = descriptionList.querySelectorAll("dd");
-
-      for (let i = 0; i < descriptionTerms.length; i++) {
-        const key = descriptionTerms[i].textContent.trim();
-        const value =
-          i < descriptionDetails.length
-            ? descriptionDetails[i].textContent.trim()
-            : null;
-
-        data[key] = value;
+            data[key] = value; // Grab it all now, then just use what's useful later
+          }
+        });
       }
-    }
+      if (sM.dlSelector) {
+        const descriptionList = document.querySelector("dl");
+        const descriptionTerms = descriptionList.querySelectorAll("dt");
+        const descriptionDetails = descriptionList.querySelectorAll("dd");
 
-    function queryAndTrim(selector) {
-      // Not using querySelectorAll on purpose, since there should only be one of these
-      const element = document.querySelector(selector);
-      return element ? element.textContent.replace(/\s+/g, " ").trim() : null;
-    }
+        for (let i = 0; i < descriptionTerms.length; i++) {
+          const key = descriptionTerms[i].textContent.trim();
+          const value =
+            i < descriptionDetails.length
+              ? descriptionDetails[i].textContent.trim()
+              : null;
+
+          data[key] = value;
+        }
+      }
+
+      function queryAndTrim(selector) {
+        // Not using querySelectorAll on purpose, since there should only be one of these
+        const element = document.querySelector(selector);
+        return element ? element.textContent.replace(/\s+/g, " ").trim() : null;
+      }
 
       if (sM.webFeaturesEval) {
         // necessary to get all of them rather than just one section's worth
         // since sites often have optional sections that can't be selected out w/CSS
         data["Web Features"] = eval(sM.webFeaturesEval);
       } else {
-    data["Web Features"] = queryAndTrim(sM.webFeaturesSelector);
+        data["Web Features"] = queryAndTrim(sM.webFeaturesSelector);
       }
 
-    data["Web Description"] = queryAndTrim(sM.descriptionSelector);
-    data.Make = sM.Make;
+      data["Web Description"] = queryAndTrim(sM.descriptionSelector);
+      data.Make = sM.Make;
       data.Model = queryAndTrim(sM.modelSelector);
       data.Year = queryAndTrim(sM.yearSelector) ?? defaultYear;
-    data.Type = queryAndTrim(sM.typeSelector);
-    data.Trim = queryAndTrim(sM.trimSelector);
+      data.Type = queryAndTrim(sM.typeSelector);
+      data.Trim = queryAndTrim(sM.trimSelector);
 
       if (sM.imageSelector === null) data.imageUrl = null;
       else {
-    const imageUrl = document.querySelector(sM.imageSelector)?.src;
+        const imageUrl = document.querySelector(sM.imageSelector)?.src;
 
         if (imageUrl === undefined) {
           throw new Error(`Incorrect image selector for ${sM.Make}`);
         }
 
         if (!imageUrl.startsWith("data:")) {
-      data.imageUrl = imageUrl;
+          data.imageUrl = imageUrl;
         }
-    }
+      }
 
-    return data;
+      return data;
     },
     siteMappings,
     defaultYear
@@ -385,7 +385,29 @@ async function transformData(renamedData, url, outputFolder) {
   //
   const transformedData = structuredClone(renamedData);
   const tD = transformedData;
+  const lastUrlSegment = getLastUrlSegment(url);
 
+  const rvTypePatterns = {
+    "Class A": /class[^a-zA-Z]{0,2}a/,
+    "Class B": /class[^a-zA-Z]{0,2}b/,
+    "Class C": /class[^a-zA-Z]{0,2}c/,
+    "Travel Trailer": /travel[^a-zA-Z]{0,2}trailer/,
+    "Fifth Wheel": /fifth[^a-zA-Z]{0,2}wheel/,
+    "Folding Camper": /folding[^a-zA-Z]{0,2}camper/,
+    "Truck Camper": /truck[^a-zA-Z]{0,2}camper/,
+    "Destination Trailer": /destination[^a-zA-Z]{0,2}trailer/,
+    "Toy Hauler": /toy[^a-zA-Z]{0,2}hauler/,
+  };
+  let typeIsValid = false;
+  for (const validType in rvTypePatterns) {
+    if (!tD.Type) break;
+    if (tD.Type.toLowerCase().includes(validType.toLowerCase())) {
+      tD.Type = validType;
+      typeIsValid = true;
+      break;
+    }
+  }
+  if (!typeIsValid) tD.Type = getRvTypeFromUrl(url, rvTypePatterns);
   tD.url = url;
   if (!tD["Web Description"] || tD["Web Description"].length < 100) {
     tD["Web Description"] = null;
@@ -446,9 +468,9 @@ async function handleImageDownload(outputFolder, transformedData, lastUrlSegment
       return result;
     })
     .catch((err) => {
-    console.error(`ERROR DOWNLOADING IMAGE: ${err}`);
+      console.error(`ERROR DOWNLOADING IMAGE: ${err}`);
       throw new Error(err);
-  });
+    });
 }
 
 /**
