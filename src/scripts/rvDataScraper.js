@@ -80,6 +80,7 @@ function getSecondLevelDomain(url) {
  * as well as additional keys based on the site mappings provided.
  */
 async function extractData(page, siteMappings, defaultYear) {
+  const extractedData = await page.evaluate(
     (sM, defaultYear) => {
     data = {};
 
@@ -120,23 +121,32 @@ async function extractData(page, siteMappings, defaultYear) {
       return element ? element.textContent.replace(/\s+/g, " ").trim() : null;
     }
 
+      if (sM.webFeaturesEval) {
+        // necessary to get all of them rather than just one section's worth
+        // since sites often have optional sections that can't be selected out w/CSS
+        data["Web Features"] = eval(sM.webFeaturesEval);
+      } else {
     data["Web Features"] = queryAndTrim(sM.webFeaturesSelector);
+      }
+
     data["Web Description"] = queryAndTrim(sM.descriptionSelector);
     data.Make = sM.Make;
+      data.Model = queryAndTrim(sM.modelSelector);
       data.Year = queryAndTrim(sM.yearSelector) ?? defaultYear;
     data.Type = queryAndTrim(sM.typeSelector);
-    data.Model = queryAndTrim(sM.modelSelector);
     data.Trim = queryAndTrim(sM.trimSelector);
 
+      if (sM.imageSelector === null) data.imageUrl = null;
+      else {
     const imageUrl = document.querySelector(sM.imageSelector)?.src;
-    if (
-      imageUrl &&
-      typeof imageUrl === "string" &&
-      !imageUrl.startsWith("data:")
-    ) {
+
+        if (imageUrl === undefined) {
+          throw new Error(`Incorrect image selector for ${sM.Make}`);
+        }
+
+        if (!imageUrl.startsWith("data:")) {
       data.imageUrl = imageUrl;
-    } else {
-      data.imageUrl = null;
+        }
     }
 
     return data;
@@ -144,6 +154,12 @@ async function extractData(page, siteMappings, defaultYear) {
     siteMappings,
     defaultYear
   );
+
+  if (siteMappings.modelEval) {
+    eval(siteMappings.modelEval)
+  }
+
+  return extractedData;
 }
 
 /**

@@ -55,12 +55,14 @@ function promptForValue(variableName) {
  * @property {string} yearSelector - CSS Selector for the year field.
  * @property {string} typeSelector - CSS Selector for the type field.
  * @property {string} modelSelector - CSS Selector for the model field.
+ * @property {string} modelEval - JS string to evaluate to set the model text.
  * @property {string} trimSelector - CSS Selector for the trim field.
  * @property {string} imageSelector - CSS Selector for the image field.
  * @property {string} descriptionSelector - CSS Selector for the description field.
  * @property {string} rowSelector - CSS Selector for rows or row-like elements in a table of data.
  * @property {string} dlSelector - CSS Selector for a dl element to extract the data from.
  * @property {string} webFeaturesSelector - CSS Selector for the web features field.
+ * @property {string} webFeaturesEval - JS string to set the web features text.
  * @property {Object} knownKeyMappings - An object mapping site-specific keys to standardized keys.
  */
 
@@ -96,12 +98,14 @@ export default async function setupSiteSelectors(
       yearSelector: await promptForValue("yearSelector"),
       typeSelector: await promptForValue("typeSelector"),
       modelSelector: await promptForValue("modelSelector"),
+      modelEval: await promptForValue("modelEval"),
       trimSelector: await promptForValue("trimSelector"),
       imageSelector: await promptForValue("imageSelector"),
       descriptionSelector: await promptForValue("descriptionSelector"),
       rowSelector: await promptForValue("rowSelector"),
       dlSelector: await promptForValue("dlSelector"),
       webFeaturesSelector: await promptForValue("webFeaturesSelector"),
+      webFeaturesEval: await promptForValue("webFeaturesEval"),
       keyMappings: {},
     };
 
