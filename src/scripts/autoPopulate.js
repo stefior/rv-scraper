@@ -137,7 +137,7 @@ async function fillInForm(page, formPageUrl, dataObject, synonymDictionary) {
         "input[name=floor_plan][type=file]"
       );
       if (fileInputElement) {
-        const filePath = path.resolve("./output/images", value + ".png");
+        const filePath = path.resolve(value);
         if (fs.existsSync(filePath)) {
           await fileInputElement.focus();
           await fileInputElement.uploadFile(filePath);

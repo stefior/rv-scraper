@@ -21,11 +21,11 @@ async function handleError(promise, errorMessage) {
  *
  * @param {string} url - The URL of the image to download.
  * @param {string} fileName - The name to use when saving the image file (without extension).
- * @param {string} outputFolder [outputFolder='./output/images/'] - The folder to save the image to.
+ * @param {string} imgOutputFolder - The folder to save the image to.
  *
  * @throws Will throw an error if there's a problem fetching the image or writing to disk.
  *
- * @returns {Promise<void>} A promise that resolves when the image has been downloaded,
+ * @returns {Promise<string>} A promise containing the image output path that resolves when the image has been downloaded,
  * saved, and possibly converted to PNG.
  *
  * @example
@@ -34,9 +34,13 @@ async function handleError(promise, errorMessage) {
  *   .then(() => console.log('Image downloaded and converted successfully'))
  *   .catch(error => console.error('Error:', error));
  */
-export default async function downloadAndConvertImage(
+export default async function downloadAndConvertToPng(
   url,
   fileName,
+  outputFolder
+) {
+  const imgOutputFolder = path.join(outputFolder, 'images')
+
   const allowLegacyRenegotiationforNodeJsOptions = {
     httpsAgent: new https.Agent({
       secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
@@ -57,19 +61,34 @@ export default async function downloadAndConvertImage(
   const ext = path.extname(url).toLowerCase().split("?")[0];
 
   await handleError(
-    fs.promises.mkdir(outputFolder, { recursive: true }),
+    fs.promises.mkdir(imgOutputFolder, { recursive: true }),
     "Error while making specified output folder"
   );
 
-  const savePath = path.join(outputFolder, `${fileName}${ext}`);
+  fileName = fileName + "-0";
+  let savePath = path.join(imgOutputFolder, `${fileName}${ext}`);
+  while (fs.existsSync(savePath)) {
+    let newFileName = fileName.split("-");
+    newFileName = `${newFileName[0]}-${Number(newFileName[1]) + 1}`;
+    fileName = newFileName;
+
+    savePath = path.join(imgOutputFolder, `${fileName}${ext}`);
+  }
   await handleError(
     fs.promises.writeFile(savePath, buffer),
     "Failed to write original image"
   );
 
   if (ext !== ".png") {
-    const pngPath = path.join(outputFolder, `${fileName}.png`);
+    let pngPath = path.join(imgOutputFolder, `${fileName}.png`);
 
+    while (fs.existsSync(pngPath)) {
+      let newFileName = fileName.split("-");
+      newFileName = `${newFileName[0]}-${Number(newFileName[1]) + 1}`;
+      fileName = newFileName;
+
+      pngPath = path.join(imgOutputFolder, `${fileName}.png`);
+    }
     await handleError(
       execAsync(`magick "${savePath}" "${pngPath}"`),
       "Error converting image to PNG"
@@ -79,5 +98,9 @@ export default async function downloadAndConvertImage(
       fs.promises.unlink(savePath),
       "Error deleting original image"
     );
+
+    return pngPath;
   }
+
+  return savePath;
 }

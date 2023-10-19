@@ -22,10 +22,13 @@ import {
  * @param {Object} params - The input parameters object.
  * @param {Array} params.urls - The URLs array, expected to be non-empty.
  * @param {Object} params.domainsMappings - The known domain mappings object, expected to be non-empty.
- * @param {string} params.outputFolder - The output folder path, expected to be a non-empty string.
  * @returns {boolean} Returns true if all parameters are valid, otherwise false.
  */
+function validateParameters({
+  urls,
   defaultYear,
+  domainsMappings,
+}) {
   if (!Array.isArray(urls) || urls.length < 1) {
     console.error("urls parameter must be an array with items");
     return false;
@@ -41,11 +44,6 @@ import {
     Object.keys(domainsMappings).length === 0
   ) {
     console.error("domainsMappings parameter must be a non-empty object");
-    return false;
-  }
-
-  if (typeof outputFolder !== "string" || outputFolder.length === 0) {
-    console.error("outputFolder parameter must be a non-empty string");
     return false;
   }
 
@@ -377,20 +375,11 @@ async function autoScroll(page) {
  * into a structure that is consistent with the desired database schema.
  *
  * @param {Object} extractedData - The original data object extracted from the web page.
- * @param {number|string} rvYear - The RV year to be assigned to the data object.
- * @param {string} lastUrlSegment - The last segment of the URL, used for some field assignments.
  * @param {string} url - The URL from where the data was extracted.
+ * @param {string} outputFolder - The folder where the data & images are output to.
  * @returns {void} - The function modifies the `extractedData` object in-place.
- *
- * @example
- * const extractedData = { Make: "Ford", Model: "Explorer" };
- * const rvYear = 2023;
- * const lastUrlSegment = "floor-plan";
- * const url = "https://example.com/rv/floor-plan";
- * transformData(extractedData, rvYear, lastUrlSegment, url);
- * // extractedData is now modified with additional fields like Year, url, "Floor plan", etc.
  */
-function transformData(renamedData, rvYear, lastUrlSegment, url) {
+async function transformData(renamedData, url, outputFolder) {
   //
   // TODO: add for all data[currentKey] = formatValue(data[currentKey]); //// NEEDS TESTING ////
   //
@@ -398,9 +387,7 @@ function transformData(renamedData, rvYear, lastUrlSegment, url) {
   const tD = transformedData;
 
   tD.url = url;
-  tD.Year = rvYear;
-  tD["Floor plan"] = lastUrlSegment;
-  if (!tD.Type) tD.Type = getRvTypeFromUrl(url);
+  tD["Floor plan"] = await handleImageDownload(outputFolder, transformedData, lastUrlSegment);
   if (!tD.Trim) {
     tD.Trim = lastUrlSegment;
   }
@@ -429,6 +416,8 @@ function transformData(renamedData, rvYear, lastUrlSegment, url) {
  * @async
  * @param {string} outputFolder - The path to the folder where images should be saved.
  * @param {Object} extractedData - The data object containing the imageUrl and Floor plan details.
+ * @param {string} lastUrlSegment - The last segment of the url.
+ * @returns {string} - The name of the saved file.
  * @throws Will throw an error if it fails to download or convert the image.
  *
  * @example
@@ -437,13 +426,25 @@ function transformData(renamedData, rvYear, lastUrlSegment, url) {
  * await handleImageDownload(outputFolder, extractedData);
  * // The image is now downloaded, converted to PNG, and saved in the specified folder.
  */
-async function handleImageDownload(outputFolder, transformedData) {
-  await downloadAndConvertToPng(
+async function handleImageDownload(outputFolder, transformedData, lastUrlSegment) {
+  if (transformedData.imageUrl === null) {
+    console.log(
+      `No image selector set for ${transformedData.url}. Proceeding without downloading.`
+    );
+    return;
+  }
+
+  return downloadAndConvertToPng(
     transformedData.imageUrl,
-    transformedData["Floor plan"],
+    lastUrlSegment,
     outputFolder
-  ).catch((err) => {
+  )
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
     console.error(`ERROR DOWNLOADING IMAGE: ${err}`);
+      throw new Error(err);
   });
 }
 
@@ -491,12 +492,10 @@ function appendDataToFile(outputFolder, extractedData) {
  * @function
  * @export
  * @param {Object} params - The input parameters for the data scraper.
- * @param {number} params.rvYear - The model year of the RVs to be scraped.
  * @param {Array<string>} params.urls - An array of URLs to scrape data from.
  * @param {Number} params.defaultYear - The year to set the extracted data as if the scraped page doesn't have it listed.
  * @param {Object} params.domainsMappings - An object containing known domain mappings which help in data extraction.
  * @param {Object} params.synonymDictionary - An object where each key is a term used in the data source, and the corresponding value is the standardized term used in the database.
- * @param {string} [params.outputFolder="./output"] - The directory where the scraped data will be saved.
  *
  * @returns {Promise<void>} A Promise that resolves when the function has completed its execution.
  *
@@ -504,20 +503,19 @@ function appendDataToFile(outputFolder, extractedData) {
  *
  * @example
  * await rvDataScraper({
- *   rvYear: 2023,
  *   urls: ['https://example.com/rv1', 'https://example.com/rv2'],
  *   domainsMappings: {...},
+ *   synonymDictionary: {...},
  *   outputFolder: './data'
  * });
  */
 export default async function rvDataScraper({
-  rvYear,
   urls,
   defaultYear,
   domainsMappings,
   synonymDictionary,
-  outputFolder = "./output",
 }) {
+  const outputFolder = "./output"
   if (!validateParameters({ urls, defaultYear, domainsMappings })) {
     return;
   }
@@ -528,7 +526,6 @@ export default async function rvDataScraper({
   await page.setViewport({ width: 1920, height: 1080 });
   let urlIndex = 0;
   const failedNavigations = [];
-  const imagesOutputFolder = path.join(outputFolder, "images");
 
   backupFile("synonym-dictionary.json");
   for (const url of urls) {
@@ -556,14 +553,7 @@ export default async function rvDataScraper({
     );
     saveDomainMappings(domainsMappings);
 
-    const transformedData = transformData(
-      renamedData,
-      rvYear,
-      getLastUrlSegment(url),
-      url
-    );
-
-    await handleImageDownload(imagesOutputFolder, transformedData);
+    const transformedData = await transformData(renamedData, url, outputFolder);
 
     appendDataToFile(outputFolder, transformedData);
 
@@ -618,45 +608,7 @@ export default async function rvDataScraper({
   await browser.close();
 }
 
-const mainUrls = {
-  "div.specCell.button-specCell-desktop > a": [
-    "https://www.granddesignrv.com/toy-haulers/momentum-m-class",
-    "https://www.granddesignrv.com/fifth-wheels/reflection",
-    "https://www.granddesignrv.com/travel-trailers/reflection",
-    "https://www.granddesignrv.com/fifth-wheels/solitude",
-    "https://www.granddesignrv.com/travel-trailers/transcend-xplor",
-    "https://www.granddesignrv.com/toy-haulers/momentum-mav",
-  ],
-  "#syncScroll > th > a": [
-    "https://www.keystonerv.com/product/bullet/comfort-travel-trailers/specs",
-    "https://www.keystonerv.com/product/bullet-crossfire/comfort-travel-trailers/specs",
-    "https://www.keystonerv.com/product/hideout/comfort-travel-trailers/specs",
-    "https://www.keystonerv.com/product/montana/luxury-fifth-wheels/specs",
-    "https://www.keystonerv.com/product/montana-high-country/luxury-fifth-wheels/specs",
-  ],
-  "div.ls-layers > div > div > a": [
-    "https://www.outdoorsrvmfg.com/back-country-class/",
-    "https://www.outdoorsrvmfg.com/blackstone-2/",
-    "https://www.outdoorsrvmfg.com/creek-side/",
-    "https://www.outdoorsrvmfg.com/timber-ridge/",
-  ],
-  "#floorplansList > li > div:first-of-type > a": [
-    "https://forestriverinc.com/rvs/travel-trailers/wolf-pup",
-    "https://forestriverinc.com/rvs/travel-trailers/grey-wolf",
-    "https://forestriverinc.com/rvs/travel-trailers-and-fifth-wheels/cherokee",
-    "https://forestriverinc.com/rvs/wolf-pack",
-    "https://forestriverinc.com/rvs/vibe",
-    "https://forestriverinc.com/rvs/vengeance-rogue-armored",
-    "https://forestriverinc.com/rvs/vengeance-rogue-sut",
-  ],
-  "a.floor-plan-card-wrapper": [
-    "https://www.thormotorcoach.com/windsport",
-    "https://www.thormotorcoach.com/vegas",
-    "https://www.thormotorcoach.com/four-winds",
-  ],
-};
-
-const urls = await extractAllSelectorLinks(mainUrls);
+const urls = [];
 const domainsMappings = JSON.parse(
   fs.readFileSync("./domains-mappings.json", "utf-8")
 );
@@ -665,7 +617,6 @@ const synonymDictionary = JSON.parse(
 );
 
 await rvDataScraper({
-  rvYear: 2024,
   urls,
   defaultYear: 2024,
   domainsMappings,
