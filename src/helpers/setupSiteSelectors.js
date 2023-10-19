@@ -55,6 +55,7 @@ function promptForValue(variableName) {
 /**
  * @typedef {Object} siteMappings
  * @property {string} Make - The make of the RV.
+ * @property {string} yearSelector - CSS Selector for the year field.
  * @property {string} typeSelector - CSS Selector for the type field.
  * @property {string} modelSelector - CSS Selector for the model field.
  * @property {string} trimSelector - CSS Selector for the trim field.
@@ -95,6 +96,7 @@ export default async function setupSiteSelectors(
     // Initialize a new object for this host
     siteMappings = {
       Make: await promptForValue("Make"),
+      yearSelector: await promptForValue("yearSelector"),
       typeSelector: await promptForValue("typeSelector"),
       modelSelector: await promptForValue("modelSelector"),
       trimSelector: await promptForValue("trimSelector"),

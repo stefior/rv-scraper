@@ -20,20 +20,19 @@ import {
  * Validates the input parameters for the rvDataScraper function.
  *
  * @param {Object} params - The input parameters object.
- * @param {number} params.rvYear - The RV year, expected to be a four-digit number.
  * @param {Array} params.urls - The URLs array, expected to be non-empty.
  * @param {Object} params.domainsMappings - The known domain mappings object, expected to be non-empty.
  * @param {string} params.outputFolder - The output folder path, expected to be a non-empty string.
  * @returns {boolean} Returns true if all parameters are valid, otherwise false.
  */
-function validateParameters({ rvYear, urls, domainsMappings, outputFolder }) {
-  if (isNaN(rvYear) || String(rvYear).length !== 4) {
-    console.error("rvYear parameter must be a valid year number");
+  defaultYear,
+  if (!Array.isArray(urls) || urls.length < 1) {
+    console.error("urls parameter must be an array with items");
     return false;
   }
 
-  if (!Array.isArray(urls) || urls.length < 1) {
-    console.error("urls parameter must be an array with items");
+  if (typeof defaultYear !== "number" || defaultYear.toString().length !== 4) {
+    console.error("defaultYear parameter must be a vaild year");
     return false;
   }
 
@@ -80,8 +79,8 @@ function getSecondLevelDomain(url) {
  * The object contains keys based on the text content of the first cell in each row of the table,
  * as well as additional keys based on the site mappings provided.
  */
-async function extractData(page, siteMappings) {
-  return page.evaluate((sM) => {
+async function extractData(page, siteMappings, defaultYear) {
+    (sM, defaultYear) => {
     data = {};
 
     if (sM.rowSelector) {
@@ -124,6 +123,7 @@ async function extractData(page, siteMappings) {
     data["Web Features"] = queryAndTrim(sM.webFeaturesSelector);
     data["Web Description"] = queryAndTrim(sM.descriptionSelector);
     data.Make = sM.Make;
+      data.Year = queryAndTrim(sM.yearSelector) ?? defaultYear;
     data.Type = queryAndTrim(sM.typeSelector);
     data.Model = queryAndTrim(sM.modelSelector);
     data.Trim = queryAndTrim(sM.trimSelector);
@@ -140,7 +140,10 @@ async function extractData(page, siteMappings) {
     }
 
     return data;
-  }, siteMappings);
+    },
+    siteMappings,
+    defaultYear
+  );
 }
 
 /**
@@ -440,6 +443,7 @@ function appendDataToFile(outputFolder, extractedData) {
  * @param {Object} params - The input parameters for the data scraper.
  * @param {number} params.rvYear - The model year of the RVs to be scraped.
  * @param {Array<string>} params.urls - An array of URLs to scrape data from.
+ * @param {Number} params.defaultYear - The year to set the extracted data as if the scraped page doesn't have it listed.
  * @param {Object} params.domainsMappings - An object containing known domain mappings which help in data extraction.
  * @param {Object} params.synonymDictionary - An object where each key is a term used in the data source, and the corresponding value is the standardized term used in the database.
  * @param {string} [params.outputFolder="./output"] - The directory where the scraped data will be saved.
@@ -459,12 +463,15 @@ function appendDataToFile(outputFolder, extractedData) {
 export default async function rvDataScraper({
   rvYear,
   urls,
+  defaultYear,
   domainsMappings,
   synonymDictionary,
   outputFolder = "./output",
 }) {
-  if (!validateParameters({ rvYear, urls, domainsMappings, outputFolder }))
+  if (!validateParameters({ urls, defaultYear, domainsMappings })) {
     return;
+  }
+
   const browser = await puppeteer.launch({ headless: "new" });
   const page = await browser.newPage();
   // Set viewport is so that mobile styles aren't applied due to puppeteer using a 783 px window by default
@@ -488,7 +495,7 @@ export default async function rvDataScraper({
       secondLevelDomain
     );
 
-    const extractedData = await extractData(page, siteMappings);
+    const extractedData = await extractData(page, siteMappings, defaultYear);
 
     // Rename each of the keys in the extracted data to correspond with the database keys
     const renamedData = await renameKeys(
@@ -609,6 +616,7 @@ const synonymDictionary = JSON.parse(
 await rvDataScraper({
   rvYear: 2024,
   urls,
+  defaultYear: 2024,
   domainsMappings,
   synonymDictionary,
 });
