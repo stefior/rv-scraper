@@ -342,6 +342,36 @@ async function renameKeys(extractedData, siteMappings, synonymDictionary) {
 }
 
 /**
+ * Automatically scrolls to the bottom of the page in a Puppeteer environment.
+ * This function is useful for triggering lazy loaded elements on a page as you scroll to the bottom.
+ * The scrolling process is done in intervals of 50 milliseconds, scrolling a distance of 100 pixels in each step.
+ * Once the bottom of the page is reached, the function resolves the promise.
+ *
+ * @async
+ * @function
+ * @param {object} page - The Puppeteer page object.
+ * @see {@link https://stackoverflow.com/questions/51529332/puppeteer-scroll-down-until-you-cant-anymore Stack Overflow}
+ */
+async function autoScroll(page) {
+  await page.evaluate(async () => {
+    await new Promise((resolve) => {
+      var totalHeight = 0;
+      var distance = 100;
+      var timer = setInterval(() => {
+        var scrollHeight = document.body.scrollHeight;
+        window.scrollBy(0, distance);
+        totalHeight += distance;
+
+        if (totalHeight >= scrollHeight - window.innerHeight) {
+          clearInterval(timer);
+          resolve();
+        }
+      }, 50);
+    });
+  });
+}
+
+/**
  * Transforms the extracted data by adding additional fields, modifying existing fields, and
  * performing various data transformations. This function is primarily used to shape the data
  * into a structure that is consistent with the desired database schema.
@@ -515,6 +545,7 @@ export default async function rvDataScraper({
       secondLevelDomain
     );
 
+    await autoScroll(page); // to load everything that is set to lazy loading
     const extractedData = await extractData(page, siteMappings, defaultYear);
 
     // Rename each of the keys in the extracted data to correspond with the database keys
