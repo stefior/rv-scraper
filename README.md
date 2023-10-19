@@ -1,6 +1,6 @@
 # RV Data Scraper
 
-A set of scripts for scraping RV data from sites, formatting it, and uploading it to the database.
+A set of scripts for scraping RV data from sites, formatting it, and uploading it to a database.
 
 Workflow: extractAllSelectorLinks.js -> rvDataScraper.js -> autoPopulate.js
 
