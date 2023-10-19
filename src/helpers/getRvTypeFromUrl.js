@@ -13,23 +13,22 @@ import isUrlValid from "./isUrlValid.js"
  * const rvType = getRvTypeFromUrl("https://www.granddesignrv.com/travel-trailers/solitude");
  * console.log(rvType);  // Outputs: "Travel Trailer"
  */
-export default function getRvTypeFromUrl(url) {
+export default function getRvTypeFromUrl(url, rvTypePatterns) {
   isUrlValid(url);
   const lowerCaseUrl = url.toLowerCase();
 
-  const rvTypePatterns = {
-    "Travel Trailer": /travel[^a-zA-Z]{0,2}trailer/,
-    "Fifth Wheel": /fifth[^a-zA-Z]{0,2}wheel/,
-    "Toy Hauler": /toy[^a-zA-Z]{0,2}hauler/,
-  };
-
   let result = "";
+  let isToyHauler = false;
   for (const [rvType, pattern] of Object.entries(rvTypePatterns)) {
     if (pattern.test(lowerCaseUrl)) {
-      result = rvType === "Toy Hauler" ? result + " " + rvType : rvType;
+      if (rvType === "Toy Hauler") {
+        isToyHauler = true;
+        continue;
+      }
+      result = rvType;
     }
   }
 
-  if (result === " Toy Hauler" || result === "") return undefined;
-  return result;
+  if (!isToyHauler) return result;
+  if (result !== "") return `${result} Toy Hauler`;
 }
