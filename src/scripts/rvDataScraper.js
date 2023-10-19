@@ -93,7 +93,11 @@ async function extractData(page, siteMappings, defaultYear) {
         // Ensure there are at least two cells in the row before proceeding
         if (cells.length >= 2) {
           const key = cells[0].textContent.trim();
-          const value = cells[1].textContent.trim();
+             value = cells[1].textContent.trim();
+            // in case there is a spacer in betweeen
+            if (!value && cells.length > 2) {
+              value = cells[2].textContent.trim();
+            }
 
           data[key] = value; // Grab it all now, then just use what's useful later
         }
