@@ -153,11 +153,12 @@ async function fillInForm(page, formPageUrl, dataObject, standardizedValues) {
       await pasteText(inputElement, value);
     }
   }
-  if (unexpectedKeys.length > 0) {
-    throw new Error(
-      `\nThere are field names in the database that aren't in known options.\nEither they were renamed or added.\nKeys: ${unexpectedKeys.toString()}`
-    );
-  }
+  // commented out due to it being unnecessary
+  // if (unexpectedKeys.length > 0) {
+  //   throw new Error(
+  //     `\nThere are field names in the database that aren't in known options.\nEither they were renamed or added.\nKeys: ${unexpectedKeys.toString()}`
+  //   );
+  // }
 }
 
 /**

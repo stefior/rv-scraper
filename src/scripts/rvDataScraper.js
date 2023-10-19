@@ -523,28 +523,29 @@ export default async function rvDataScraper({
     }
     prependAppendBrackets(filePath);
 
+    // DEACTIVATED BECAUSE SOME BRANDS HAVE DUPLICATE TRIMS
     // Filter out duplicate objects
-    const content = fs.readFileSync(filePath, "utf-8");
-    let jsonArr;
-    try {
-      jsonArr = JSON.parse(content);
-    } catch (error) {
-      console.error(`Failed to parse JSON from ${filePath}:`, error.message);
-      continue;
-    }
-    if (!Array.isArray(jsonArr)) {
-      console.error(`Content in ${filePath} is not an array.`);
-      continue;
-    }
-    const uniqueJsonArr = [];
-    const seenObjects = new Set();
-    for (const item of jsonArr) {
-      const strItem = JSON.stringify(item);
-      if (!seenObjects.has(strItem)) {
-        seenObjects.add(strItem);
-        uniqueJsonArr.push(item);
-      }
-    }
+    // const content = fs.readFileSync(filePath, "utf-8");
+    // let jsonArr;
+    // try {
+    //   jsonArr = JSON.parse(content);
+    // } catch (error) {
+    //   console.error(`Failed to parse JSON from ${filePath}:`, error.message);
+    //   continue;
+    // }
+    // if (!Array.isArray(jsonArr)) {
+    //   console.error(`Content in ${filePath} is not an array.`);
+    //   continue;
+    // }
+    // const uniqueJsonArr = [];
+    // const seenObjects = new Set();
+    // for (const item of jsonArr) {
+    //   const strItem = JSON.stringify(item);
+    //   if (!seenObjects.has(strItem)) {
+    //     seenObjects.add(strItem);
+    //     uniqueJsonArr.push(item);
+    //   }
+    // }
 
     // Write the filtered array back to the file
     fs.writeFileSync(filePath, JSON.stringify(uniqueJsonArr, null, 2));

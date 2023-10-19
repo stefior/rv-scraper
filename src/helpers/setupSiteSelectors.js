@@ -4,18 +4,6 @@ import { createParser } from "css-selector-parser";
 import saveDomainMappings from "./saveDomainMappings.js";
 
 const parse = createParser();
-/**
- * @param {string} selector - A CSS selector.
- * @returns {boolean} - True if a valid CSS selector, otherwise false.
- */
-function isValidCssSelector(selector) {
-  try {
-    parse(selector);
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
 
 /**
  * Prompts the user to input a selector for a specified selector variable via the console.
@@ -46,9 +34,6 @@ function promptForValue(variableName) {
             if (selector.includes("null")) {
               rl.close();
               resolve(null);
-            } else if (!isValidCssSelector(selector)) {
-              console.log("\nINVALID SELECTOR. Please try again.");
-              ask();
             } else if (selector === "") {
               console.log("\nInput cannot be empty. Please try again.");
               ask();
