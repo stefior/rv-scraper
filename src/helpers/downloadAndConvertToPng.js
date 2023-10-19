@@ -1,5 +1,8 @@
 import path from "path";
 import fs from "fs";
+import axios from "axios";
+import crypto from "crypto";
+import https from "https";
 import util from "node:util";
 import { exec } from "child_process";
 const execAsync = util.promisify(exec);
@@ -34,17 +37,23 @@ async function handleError(promise, errorMessage) {
 export default async function downloadAndConvertImage(
   url,
   fileName,
-  outputFolder = "./output/images/"
-) {
+  const allowLegacyRenegotiationforNodeJsOptions = {
+    httpsAgent: new https.Agent({
+      secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
+    }),
+  };
   let response;
   try {
-    response = await fetch(url);
+    response = await axios({
+      ...allowLegacyRenegotiationforNodeJsOptions,
+      url,
+      method: "GET",
+      responseType: "stream",
+    });
   } catch (err) {
-    throw new Error(`Failed to fetch image: ${err.message}`);
+    throw new Error(`Failed to fetch image: ${err}`);
   }
-
-  const arrayBuffer = await response.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  const buffer = await response.data;
   const ext = path.extname(url).toLowerCase().split("?")[0];
 
   await handleError(
