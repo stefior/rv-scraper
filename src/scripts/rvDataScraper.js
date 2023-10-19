@@ -387,6 +387,9 @@ async function transformData(renamedData, url, outputFolder) {
   const tD = transformedData;
 
   tD.url = url;
+  if (!tD["Web Description"] || tD["Web Description"].length < 100) {
+    tD["Web Description"] = null;
+  }
   tD["Floor plan"] = await handleImageDownload(outputFolder, transformedData, lastUrlSegment);
   if (!tD.Trim) {
     tD.Trim = lastUrlSegment;
