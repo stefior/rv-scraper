@@ -97,11 +97,11 @@ async function pasteText(el, val) {
  * @param {Object} page - The Puppeteer page object.
  * @param {string} formPageUrl - The URL of the page containing the form to be filled out.
  * @param {Object} dataObject - An object containing the data to populate the form with.
- * @param {Object} standardizedValues - An object containing standardized values for certain form fields.
+ * @param {Object} synonymDictionary - An object containing standardized values for certain form fields.
  * @throws Will throw an error if there are unexpected keys in the data object that do not correspond to any fields in the form, or if other issues arise while interacting with the page.
  * @returns {Promise<void>} Returns a promise that resolves when the form has been filled out.
  */
-async function fillInForm(page, formPageUrl, dataObject, standardizedValues) {
+async function fillInForm(page, formPageUrl, dataObject, synonymDictionary) {
   await page.goto(formPageUrl);
   console.log(`Filling out form for "${dataObject.Name}"`);
 
@@ -123,7 +123,7 @@ async function fillInForm(page, formPageUrl, dataObject, standardizedValues) {
       } else if (
         textContent &&
         !textContent.includes("Generate AI Description") &&
-        !(textContent in standardizedValues) &&
+        !(textContent in synonymDictionary) &&
         !unexpectedKeys.includes(textContent)
       ) {
         unexpectedKeys.push(textContent);
@@ -269,7 +269,7 @@ async function submitForm(
  * @param {string} params.inputFile - The path to the JSON file containing the data to populate the form with.
  * @param {string} params.loginUrl - The URL to the login page.
  * @param {string} params.formPageUrl - The URL to the page containing the form to be populated.
- * @param {Object} params.standardizedValues - An object containing standardized values for certain form fields.
+ * @param {Object} params.synonymDictionary - An object containing standardized values for certain form fields.
  * @throws Will throw an error if validation fails, if there's an issue with browser/page initialization, or if form submission fails.
  * @returns {Promise<void>} Returns a promise that resolves when all forms have been successfully submitted.
  *
@@ -278,14 +278,14 @@ async function submitForm(
  *   inputFile: './data.json',
  *   loginUrl: 'https://example.com/login',
  *   formPageUrl: 'https://example.com/form',
- *   standardizedValues: { ... }
+ *   synonymDictionary: { ... }
  * });
  */
 export default async function autoPopulate({
   inputFile,
   loginUrl,
   formPageUrl,
-  standardizedValues,
+  synonymDictionary,
 }) {
   const jsonString = fs.readFileSync(inputFile, "utf8");
   if (!validateParameters(inputFile, jsonString, loginUrl, formPageUrl)) return;
@@ -302,7 +302,7 @@ export default async function autoPopulate({
   page = await browser.newPage();
 
   for (const dataObject of jsonData) {
-    await fillInForm(page, formPageUrl, dataObject, standardizedValues);
+    await fillInForm(page, formPageUrl, dataObject, synonymDictionary);
 
     // Click a button to generate AI description with inputted data, if there isn't one already
     const aiButtonSelector = "#generate_desc";
@@ -331,11 +331,12 @@ export default async function autoPopulate({
   await browser.close();
 }
 
-const standardizedValues = JSON.parse(
-  fs.readFileSync("./standardized-values.json", "utf-8")
+const synonymDictionary = JSON.parse(
+  fs.readFileSync("./synonym-dictionary.json", "utf-8")
 );
 autoPopulate({
-  // inputFile: "./output/testing.json",
-  // formPageUrl: "http://localhost:5500/testing.html",
-  standardizedValues,
+  inputFile: "",
+  formPageUrl: "",
+  loginUrl: "",
+  synonymDictionary,
 });
