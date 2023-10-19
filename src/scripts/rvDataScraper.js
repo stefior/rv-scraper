@@ -394,7 +394,7 @@ function transformData(renamedData, rvYear, lastUrlSegment, url) {
   //
   // TODO: add for all data[currentKey] = formatValue(data[currentKey]); //// NEEDS TESTING ////
   //
-  const transformedData = JSON.parse(JSON.stringify(renamedData));
+  const transformedData = structuredClone(renamedData);
   const tD = transformedData;
 
   tD.url = url;
