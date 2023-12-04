@@ -14,6 +14,7 @@ import {
   backupFile,
   saveDomainMappings,
   prependAppendBrackets,
+  formatValue
 } from "../helpers/index.js";
 
 /**
@@ -380,9 +381,6 @@ async function autoScroll(page) {
  * @returns {void} - The function modifies the `extractedData` object in-place.
  */
 async function transformData(renamedData, url, outputFolder) {
-  //
-  // TODO: add for all data[currentKey] = formatValue(data[currentKey]); //// NEEDS TESTING ////
-  //
   const transformedData = structuredClone(renamedData);
   const tD = transformedData;
   const lastUrlSegment = getLastUrlSegment(url);
@@ -416,7 +414,6 @@ async function transformData(renamedData, url, outputFolder) {
   if (!tD.Trim) {
     tD.Trim = lastUrlSegment;
   }
-  tD.Name = `${tD.Year} ${tD.Make} ${tD.Model} ${tD.Trim}`;
 
   if ("Awning length ftm" in tD) {
     tD["Awning length ftm"] = splitAwningMeasurements(tD["Awning length ftm"]);
@@ -430,6 +427,20 @@ async function transformData(renamedData, url, outputFolder) {
     // Wheel width and wheel diameter are different, but diameter is likely what was meant
     tD["Rear wheel width in"] = tireData.wheelDiameterIn;
   }
+
+  //
+  // TODO: add for all data[currentKey] = formatValue(currentKey, data[currentKey]);
+  if ("Width inmm" in tD) {
+    tD["Width inmm"] = formatValue("Width inmm", tD["Width inmm"])
+  }
+  if ("Interior height in" in tD) {
+    tD["Interior height in"] = formatValue("Interior height in", tD["Interior height in"])
+  }
+  if ("Model" in tD) {
+    tD["Model"] = formatValue("Model", tD["Model"])
+  }
+
+  tD.Name = `${tD.Year} ${tD.Make} ${tD.Model} ${tD.Trim}`;
 
   return tD;
 }

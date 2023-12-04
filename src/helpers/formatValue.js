@@ -5,7 +5,7 @@ import { SentimentAnalyzer } from "node-nlp";
 const standardizedValues = {
   Year: "number",
   Make: "string",
-  Model: "string",
+  Model: "no years",
   Trim: "string",
   Type: "string",
   "Generic type primary": "string",
@@ -212,6 +212,10 @@ export default function formatValue(key, value) {
     case "string": {
       return typeof value === "string" ? value : value.toString();
     }
+    case "no years": {
+      const pattern = /(\s(?:19|20)\d\d|(?:19|20)\d\d\s|(?:19|20)\d\d)/g
+      return value.replace(pattern, "");
+    }
     case "boolean": {
       if (value) {
         const sentiment = new SentimentAnalyzer({ language: "en" });
@@ -219,7 +223,6 @@ export default function formatValue(key, value) {
           if (result.vote !== "negative") {
             return true;
           }
-          return false;
         });
       }
       return false;
@@ -280,9 +283,8 @@ export default function formatValue(key, value) {
       return strNumToNum(value);
     }
     default: {
-      throw new Error(
-        `Unknown formatting type: ${type} for key: ${key}`
-      );
+      console.error(`Unknown formatting type "${type}" for key "${key}"`)
+      return value
     }
   }
 }
