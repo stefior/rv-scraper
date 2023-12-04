@@ -1,4 +1,5 @@
 {
+  "TEMPEXTRA": "TEMPEXTRA",
   "Year": "Year",
   "Model": "Model",
   "Make": "Make",
@@ -291,5 +292,9 @@
   "Box Size": null,
   "Ext Open Length": "Length ftin",
   "Ext Closed Length": "Length closed inclosed ftclosed mmclosed m",
-  "Ext Closed Height": "Height closed ftin"
+  "Ext Closed Height": "Height closed ftin",
+  "Exterior Length (pin to bumper)": "Length ftin",
+  "Furnace, Auto-ignition (BTU output)": "Heater",
+  "Exterior Width (without wheel wells)": "Width inmm",
+  "Exterior Width (including wheel wells)": "Width inmm"
 }

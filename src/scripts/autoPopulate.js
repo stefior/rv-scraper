@@ -335,8 +335,8 @@ const synonymDictionary = JSON.parse(
   fs.readFileSync("./synonym-dictionary.json", "utf-8")
 );
 autoPopulate({
-  inputFile: "",
-  formPageUrl: "",
-  loginUrl: "",
+  inputFile: "./output/filename.json",
+  loginUrl: process.env.LOGIN_URL,
+  formPageUrl: process.env.FORM_PAGE_URL,
   synonymDictionary,
 });

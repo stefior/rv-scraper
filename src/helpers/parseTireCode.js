@@ -36,7 +36,7 @@
  * //   plyRating: 8
  * // }
  *
- * @see {@link https://stackoverflow.com/a/66211339 | StackOverflow Reference for the RegEx}
+ * @see {@link https://stackoverflow.com/a/66211339 | StackOverflow Reference for the base RegEx}
  */
 export default function parseTireCode(tireCode) {
   const pattern =

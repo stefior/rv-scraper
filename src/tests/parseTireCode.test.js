@@ -112,4 +112,19 @@ describe("parseTireCode", () => {
       tireDiameterIn: 31.2,
     });
   });
+
+  it("should handle only the first part of tire codes", () => {
+    const tireCode = "ST205";
+    const result = parseTireCode(tireCode);
+    expect(result).toEqual({
+      tireCode,
+      vehicleClass: "ST",
+      sectionWidthMM: 205,
+      sectionWidthIn: 8.1,
+      aspectRatio: 1,
+      construction: "R",
+      wheelDiameterIn: 15,
+      tireDiameterIn: 31.2,
+    });
+  });
 });
