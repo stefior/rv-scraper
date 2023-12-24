@@ -35,8 +35,8 @@ function validateParameters({
     return false;
   }
 
-  if (typeof defaultYear !== "number" || defaultYear.toString().length !== 4) {
-    console.error("defaultYear parameter must be a vaild year");
+  if (defaultYear !== null && (typeof defaultYear !== "number" || defaultYear.toString().length !== 4)) {
+    console.error("defaultYear parameter must be a valid year or null");
     return false;
   }
 
@@ -132,24 +132,29 @@ async function extractData(page, siteMappings, defaultYear) {
         data["Web Features"] = queryAndTrim(sM.webFeaturesSelector);
       }
 
+      if (sM.optionsSelector) {
+        data["Optional Features"] = queryAndTrim(sM.optionsSelector);
+      }
+
       data["Web Description"] = queryAndTrim(sM.descriptionSelector);
-      data.Make = sM.Make;
+      data.Make = sM.Make ?? queryAndTrim(sM.makeSelector);
       data.Model = queryAndTrim(sM.modelSelector);
-      data.Year = queryAndTrim(sM.yearSelector) ?? defaultYear;
+      data.Year = queryAndTrim(sM.yearSelector) ?? defaultYear ?? 'MISSING_YEAR';
       data.Type = queryAndTrim(sM.typeSelector);
       data.Trim = queryAndTrim(sM.trimSelector);
 
-      if (sM.imageSelector === null) data.imageUrl = null;
-      else {
-        const imageUrl = document.querySelector(sM.imageSelector)?.src;
+      if (sM.imageSelector === null) {
+          data.imageUrl = null;
+      } else {
+          const imageUrl = document.querySelector(sM.imageSelector)?.src;
 
-        if (imageUrl === undefined) {
-          throw new Error(`Incorrect image selector for ${sM.Make}`);
-        }
+          if (imageUrl === undefined) {
+              throw new Error(`Incorrect image selector for ${sM.Make}`);
+          }
 
-        if (!imageUrl.startsWith("data:")) {
-          data.imageUrl = imageUrl;
-        }
+          if (!imageUrl.startsWith("data:")) {
+              data.imageUrl = imageUrl;
+          }
       }
 
       return data;
@@ -375,10 +380,12 @@ async function autoScroll(page) {
  * performing various data transformations. This function is primarily used to shape the data
  * into a structure that is consistent with the desired database schema.
  *
+ * @async
+ * @function
  * @param {Object} extractedData - The original data object extracted from the web page.
  * @param {string} url - The URL from where the data was extracted.
  * @param {string} outputFolder - The folder where the data & images are output to.
- * @returns {void} - The function modifies the `extractedData` object in-place.
+ * @returns {Object} - The function returns the transformed data.
  */
 async function transformData(renamedData, url, outputFolder) {
   const transformedData = structuredClone(renamedData);
@@ -415,9 +422,9 @@ async function transformData(renamedData, url, outputFolder) {
     tD.Trim = lastUrlSegment;
   }
 
-  if ("Awning length ftm" in tD) {
-    tD["Awning length ftm"] = splitAwningMeasurements(tD["Awning length ftm"]);
-  }
+  // if ("Awning length ftm" in tD) {
+    // tD["Awning length ftm"] = splitAwningMeasurements(tD["Awning length ftm"]);
+  // }
 
   addMissingGvwrUvwCcc(tD);
 
@@ -470,7 +477,7 @@ async function handleImageDownload(outputFolder, transformedData, lastUrlSegment
     return;
   }
 
-  return downloadAndConvertToPng(
+  return await downloadAndConvertToPng(
     transformedData.imageUrl,
     lastUrlSegment,
     outputFolder
@@ -545,93 +552,64 @@ function appendDataToFile(outputFolder, extractedData) {
  *   outputFolder: './data'
  * });
  */
-export default async function rvDataScraper({
-  urls,
-  defaultYear,
-  domainsMappings,
-  synonymDictionary,
-}) {
+export default async function rvDataScraper() {
+  const domainsMappings = JSON.parse(fs.readFileSync("./domains-mappings.json", "utf-8"));
+  const synonymDictionary = JSON.parse(fs.readFileSync("./synonym-dictionary.json", "utf-8"));
+  const urls = JSON.parse(fs.readFileSync("./extracted-links.json", "utf-8"))
+  const defaultYear = null;
   const outputFolder = "./output"
+  let startingIndex = Number(fs.readFileSync("./startingIndex.txt", "utf-8"));
+
+
   if (!validateParameters({ urls, defaultYear, domainsMappings })) {
     return;
   }
 
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({ headless: false, dumpio: true, ignoreHTTPSErrors: true });
   const page = await browser.newPage();
   // Set viewport is so that mobile styles aren't applied due to puppeteer using a 783 px window by default
   await page.setViewport({ width: 1920, height: 1080 });
-  let urlIndex = 0;
+  page.setDefaultNavigationTimeout(0); 
   const failedNavigations = [];
 
   backupFile("synonym-dictionary.json");
-  for (const url of urls) {
-    try {
-      // Waiting for load event is so the scraper doesn't scrape temporary placeholder images
-      await page.goto(url, { waitUntil: "load" });
-    } catch (err) {
-      failedNavigations.push(url);
-      continue; // Continue with the next URL if navigation fails, listing all failures at the end
+  try {
+    for (let i = Number(startingIndex); i < urls.length; i++) {
+      const url = urls[i];
+      try {
+        // Waiting for load event is so the scraper doesn't scrape temporary placeholder images
+        await page.goto(url, { waitUntil: "load"});
+      } catch (err) {
+        failedNavigations.push(url);
+        continue; // Continue with the next URL if navigation fails, listing all failures at the end
+      }
+      const secondLevelDomain = getSecondLevelDomain(url);
+      const siteMappings = await setupSiteSelectors(
+        domainsMappings,
+        secondLevelDomain
+      );
+
+      await autoScroll(page); // to load everything that is set to lazy loading
+      const extractedData = await extractData(page, siteMappings, defaultYear);
+
+      // Rename each of the keys in the extracted data to correspond with the database keys
+      const renamedData = await renameKeys(
+        extractedData,
+        siteMappings,
+        synonymDictionary
+      );
+      saveDomainMappings(domainsMappings);
+
+      const transformedData = await transformData(renamedData, url, outputFolder);
+
+      appendDataToFile(outputFolder, transformedData);
+
+      console.log(`Scraped and saved data for ${i} of ${urls.length}`);
+      startingIndex++;
     }
-    const secondLevelDomain = getSecondLevelDomain(url);
-    const siteMappings = await setupSiteSelectors(
-      domainsMappings,
-      secondLevelDomain
-    );
-
-    await autoScroll(page); // to load everything that is set to lazy loading
-    const extractedData = await extractData(page, siteMappings, defaultYear);
-
-    // Rename each of the keys in the extracted data to correspond with the database keys
-    const renamedData = await renameKeys(
-      extractedData,
-      siteMappings,
-      synonymDictionary
-    );
-    saveDomainMappings(domainsMappings);
-
-    const transformedData = await transformData(renamedData, url, outputFolder);
-
-    appendDataToFile(outputFolder, transformedData);
-
-    console.log(`Scraped and saved data for ${urlIndex + 1} of ${urls.length}`);
-    urlIndex++;
-  }
-  const files = fs.readdirSync(outputFolder);
-  for (const file of files) {
-    // Turn outputted json files into arrays
-    const filePath = path.join(outputFolder, file);
-    const stats = fs.statSync(filePath);
-    if (stats.isDirectory()) {
-      continue;
-    }
-    prependAppendBrackets(filePath);
-
-    // DEACTIVATED BECAUSE SOME BRANDS HAVE DUPLICATE TRIMS
-    // Filter out duplicate objects
-    // const content = fs.readFileSync(filePath, "utf-8");
-    // let jsonArr;
-    // try {
-    //   jsonArr = JSON.parse(content);
-    // } catch (error) {
-    //   console.error(`Failed to parse JSON from ${filePath}:`, error.message);
-    //   continue;
-    // }
-    // if (!Array.isArray(jsonArr)) {
-    //   console.error(`Content in ${filePath} is not an array.`);
-    //   continue;
-    // }
-    // const uniqueJsonArr = [];
-    // const seenObjects = new Set();
-    // for (const item of jsonArr) {
-    //   const strItem = JSON.stringify(item);
-    //   if (!seenObjects.has(strItem)) {
-    //     seenObjects.add(strItem);
-    //     uniqueJsonArr.push(item);
-    //   }
-    // }
-
-    // Write the filtered array back to the file
-    fs.writeFileSync(filePath, JSON.stringify(uniqueJsonArr, null, 2));
+  } catch {
+    fs.writeFileSync('./lastIndex.txt', startingIndex);
+    throw new Error('Failed inside main scraper for loop')
   }
 
   if (failedNavigations.length > 0) {
@@ -644,17 +622,11 @@ export default async function rvDataScraper({
   await browser.close();
 }
 
-const urls = [];
-const domainsMappings = JSON.parse(
-  fs.readFileSync("./domains-mappings.json", "utf-8")
-);
-const synonymDictionary = JSON.parse(
-  fs.readFileSync("./synonym-dictionary.json", "utf-8")
-);
-
-await rvDataScraper({
-  urls,
-  defaultYear: 2024,
-  domainsMappings,
-  synonymDictionary,
+// Run the scraper
+rvDataScraper().then(() => {
+    console.log('Scraping completed successfully.');
+    s.exit(0); // Exit with success code
+}).catch((error) => {
+    console.error(`Scraping failed: ${error}`);
+    process.exit(1); // Exit with error code
 });

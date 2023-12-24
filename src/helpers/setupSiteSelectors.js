@@ -95,6 +95,7 @@ export default async function setupSiteSelectors(
     // Initialize a new object for this host
     siteMappings = {
       Make: await promptForValue("Make"),
+      makeSelector: await promptForValue("makeSelector"),
       yearSelector: await promptForValue("yearSelector"),
       typeSelector: await promptForValue("typeSelector"),
       modelSelector: await promptForValue("modelSelector"),
@@ -104,6 +105,7 @@ export default async function setupSiteSelectors(
       descriptionSelector: await promptForValue("descriptionSelector"),
       rowSelector: await promptForValue("rowSelector"),
       dlSelector: await promptForValue("dlSelector"),
+      optionsSelector: await promptForValue("optionsSelector"),
       webFeaturesSelector: await promptForValue("webFeaturesSelector"),
       webFeaturesEval: await promptForValue("webFeaturesEval"),
       keyMappings: {},

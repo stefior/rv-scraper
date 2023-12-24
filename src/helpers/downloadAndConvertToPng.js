@@ -65,11 +65,11 @@ export default async function downloadAndConvertToPng(
     "Error while making specified output folder"
   );
 
-  fileName = fileName + "-0";
+  fileName = fileName.split('-').join('_') + "-0";
   let savePath = path.join(imgOutputFolder, `${fileName}${ext}`);
   while (fs.existsSync(savePath)) {
     let newFileName = fileName.split("-");
-    newFileName = `${newFileName[0]}-${Number(newFileName[1]) + 1}`;
+    newFileName = `${newFileName[0]}-${parseInt(newFileName[1]) + 1}`;
     fileName = newFileName;
 
     savePath = path.join(imgOutputFolder, `${fileName}${ext}`);

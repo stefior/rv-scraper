@@ -2,7 +2,7 @@ import puppeteer from "puppeteer";
 import Bottleneck from "bottleneck";
 import fs from "fs";
 
-const MAX_CONCURRENT = 36; // Config
+const MAX_CONCURRENT = 7; // Config
 const limiter = new Bottleneck({ maxConcurrent: MAX_CONCURRENT });
 
 /**
@@ -62,7 +62,7 @@ export default async function extractAllSelectorLinks(urlsObject) {
     throw new Error("Invalid input: urls should be an object");
   }
 
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({ headless: false });
   process.stdout.write("Extracting URLs...\n");
 
   const tasks = [];
@@ -85,7 +85,7 @@ export default async function extractAllSelectorLinks(urlsObject) {
   console.log("\n");
   await browser.close();
 
-  fs.appendFileSync("extractedLinks.json", JSON.stringify(allMappedLinks));
+  fs.appendFileSync("extracted-links.json", JSON.stringify(allMappedLinks));
 
   return allMappedLinks;
 }
@@ -94,6 +94,5 @@ export default async function extractAllSelectorLinks(urlsObject) {
 // many links you want, then use multi cursor in VS code to easily turn it into an array
 // The output can then be copied into or piped into rvDataScraper.js
 extractAllSelectorLinks({
-  "": [
-  ],
+    "": [],
 });

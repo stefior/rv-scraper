@@ -4,4 +4,7 @@ TODO.md
 *.html
 output/
 backups/
-example_output/
+
+domains-mappings.json
+synonym-dictionary.json
+extracted-links.json
